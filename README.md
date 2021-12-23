@@ -1,5 +1,9 @@
 # EZMAIL 
 
+
+
+[![Latest Stable Version](http://poser.pugx.org/phpunit/phpunit/v)](https://packagist.org/packages/ezmail/ezmail) 
+
 ## Overview
 EZMAIL is a lightweight package created with PHP using the official MIME documentation to send emails using the latest SMTP configuration. By using this package you will be able to send encrypted emails to anyone with a valid email address.
 
