@@ -1,0 +1,24 @@
+{
+    "name": "ezmail/ezmail",
+    "type": "library",
+    "description": "A lightweight package created with PHP using the official MIME documentation to send emails using the latest SMTP configuration",
+    "keywords": ["PHP","SMTP","PHP SMTP","EZMAIL", "nerdtrix"],
+    "homepage": "https://nerdtrix.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jerry Urena",
+            "email": "jerryurenaa@gmail.com",
+            "homepage": "https://jerryurenaa.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "EZMAIL\\": "EZMAIL/"
+        }
+    }
+}
