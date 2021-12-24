@@ -2,6 +2,14 @@
     namespace EZMAIL;
     use \Exception;
 
+    /**
+    * @copyright (c) Nerdtrix LLC 2021
+    * @author Name: Jerry Urena
+    * @author Social link:  @jerryurenaa
+    * @author email: jerryurenaa@gmail.com
+    * @author website: jerryurenaa.com
+    * @license MIT (included with this project)
+    */
 
     class EZMAIL
     {

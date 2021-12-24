@@ -2,7 +2,6 @@
 
 [![Latest Stable Version](http://poser.pugx.org/ezmail/ezmail/v)](https://packagist.org/packages/ezmail/ezmail)
 [![Total Downloads](http://poser.pugx.org/ezmail/ezmail/downloads)](https://packagist.org/packages/ezmail/ezmail) 
-[![Latest Unstable Version](http://poser.pugx.org/ezmail/ezmail/v/unstable)](https://packagist.org/packages/ezmail/ezmail) 
 [![License](http://poser.pugx.org/ezmail/ezmail/license)](https://packagist.org/packages/ezmail/ezmail) 
 [![PHP Version Require](http://poser.pugx.org/ezmail/ezmail/require/php)](https://packagist.org/packages/ezmail/ezmail)
 
@@ -38,7 +37,6 @@ EZMAIL is a lightweight package created with PHP using the official MIME documen
 
 ```
 composer require ezmail/ezmail
-
 ```
 
 
@@ -76,15 +74,12 @@ composer require ezmail/ezmail
     {
         #Errors
         print($ex->getMessage());
-    }   
-
+    }
 ```
 
 ## List of available configurations
 
 ```php
-<?php 
-
 $config = [
     "appName" => "EZMAIL",
     "useSMTP" => true, //optional
@@ -108,13 +103,11 @@ $config = [
         "options" => [] //optional
     ]
 ];
-
 ```
 
 ## PHP mail config example
 
 ```php
-<?php
 $config2 = [
     "appName" => "EZMAIL",
     "useSMTP" => false,
@@ -123,7 +116,6 @@ $config2 = [
     "to" => ["My name" => "example@host.com"],
     "config" => ["username" => "example@host.com"]
 ];
-
 ```
 
 ## Tips
