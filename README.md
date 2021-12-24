@@ -1,7 +1,5 @@
 # EZMAIL 
 
-
-
 [![Latest Stable Version](http://poser.pugx.org/phpunit/phpunit/v)](https://packagist.org/packages/ezmail/ezmail) 
 
 ## Overview
@@ -34,6 +32,11 @@ EZMAIL is a lightweight package created with PHP using the official MIME documen
 
 ## Installation
 
+```
+composer require ezmail/ezmail
+
+```
+
 
 ## Ussage 
 
@@ -41,6 +44,9 @@ EZMAIL is a lightweight package created with PHP using the official MIME documen
 <?php
     use EZMAIL\EZMAIL; //update this according to your path.
     use \Exceptions; 
+
+    #Autoload
+    require 'vendor/autoload.php';
 
     $config = [
         "appName" => "EZMAIL",
@@ -70,6 +76,49 @@ EZMAIL is a lightweight package created with PHP using the official MIME documen
 
 ```
 
+## List of available configurations
+
+```php
+
+$config = [
+    "appName" => "EZMAIL",
+    "useSMTP" => true, //optional
+    "subject" => "Test Email",
+    "body" => "<p>This is a sample email that can be in plain text or HTML</p>",
+    "to" => ["My name" => "example@host.com"],
+    "replyTo" => "", //optional
+    "from" => [], //optional
+    "attachment" => [], //optional
+    "cc" => [], //optional
+    "bcc" => [], //optional
+    "config" => [
+        "isDebug" => true, //optional
+        "hostName" => "smtp.myhost.com",
+        "portNumber" => 587,
+        "timeout" => 30, //optional
+        "username" => "example@host.com",
+        "password" => "MyCredentials",
+        "authToken" => "", //optional
+        "authType" => "STANDARD", //optional
+        "options" => [] //optional
+    ]
+];
+
+```
+
+## PHP mail config example
+
+```php
+$config2 = [
+    "appName" => "EZMAIL",
+    "useSMTP" => false,
+    "subject" => "Test Email",
+    "body" => "<p>This is a sample email that can be in plain text or HTML</p>",
+    "to" => ["My name" => "example@host.com"],
+    "config" => ["username" => "example@host.com"]
+];
+
+```
 
 ## Tips
 - If you are using gmail as your SMTP server you must enable the less secure apps on google. [Learn more](https://www.google.com/settings/security/lesssecureapps)  
