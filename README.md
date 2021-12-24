@@ -1,6 +1,10 @@
 # EZMAIL 
 
-[![Latest Stable Version](http://poser.pugx.org/phpunit/phpunit/v)](https://packagist.org/packages/ezmail/ezmail) 
+[![Latest Stable Version](http://poser.pugx.org/ezmail/ezmail/v)](https://packagist.org/packages/ezmail/ezmail)
+[![Total Downloads](http://poser.pugx.org/ezmail/ezmail/downloads)](https://packagist.org/packages/ezmail/ezmail) 
+[![Latest Unstable Version](http://poser.pugx.org/ezmail/ezmail/v/unstable)](https://packagist.org/packages/ezmail/ezmail) 
+[![License](http://poser.pugx.org/ezmail/ezmail/license)](https://packagist.org/packages/ezmail/ezmail) 
+[![PHP Version Require](http://poser.pugx.org/ezmail/ezmail/require/php)](https://packagist.org/packages/ezmail/ezmail)
 
 ## Overview
 EZMAIL is a lightweight package created with PHP using the official MIME documentation to send emails using the latest SMTP configuration. By using this package you will be able to send encrypted emails to anyone with a valid email address.
@@ -79,6 +83,7 @@ composer require ezmail/ezmail
 ## List of available configurations
 
 ```php
+<?php 
 
 $config = [
     "appName" => "EZMAIL",
@@ -109,6 +114,7 @@ $config = [
 ## PHP mail config example
 
 ```php
+<?php
 $config2 = [
     "appName" => "EZMAIL",
     "useSMTP" => false,
@@ -132,4 +138,4 @@ This module was inspired and created by [@jerryurenaa](http://jerryurenaa.com)
 EZMAIL is [MIT](https://github.com/Nerdtrix/FetchAsync/blob/main/LICENSE.md) licensed.
 
 
-###### Powered by [Nerdtrix.com](http://nerdtrix.com)
+###### Powered by [Nerdtrix.com](http://nerdtrix.com) | Reinventing the wheels for a better future!
