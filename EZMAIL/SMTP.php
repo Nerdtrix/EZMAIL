@@ -12,6 +12,7 @@ class SMTP
 {
     const BUFFER_SIZE = 512;
 
+    private bool $isSSL;
     private string $hostName;
     private string $portNumber;
     private string $username;
@@ -88,6 +89,13 @@ class SMTP
 
     public function connect() : string
     {
+        $this->isSSL = strpos($this->hostName, "ssl://") !== false;
+
+        if ($this->portNumber == 465 && !$this->isSSL)
+        {
+            $this->hostName = "ssl://" . $this->hostName;
+        }
+
         // Opening socket.
         $this->socket->open(
             $this->hostName,

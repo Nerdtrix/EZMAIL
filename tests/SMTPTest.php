@@ -76,6 +76,36 @@ class SMTPTest extends TestCase
             );
         }
     }
+
+    public function testConnectOnPort465()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "220 server ready");
+        array_push($socket->readStringResults, "");
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            465,
+            "user",
+            "password",
+            socket: $socket,
+            autoConnect: false
+        );
+        $announcement = $smtp->connect();
+
+        // Assert.
+        $this->assertFalse($socket->isClosed);
+        $this->assertEquals("ssl://localhost", $socket->openHost);
+        $this->assertEquals(465, $socket->openPort);
+        $this->assertEquals(30, $socket->openTimeout);
+        $this->assertEmpty($socket->readStringResults);
+        $this->assertEmpty($socket->writeStringData);
+        $this->assertEquals("server ready", $announcement);
+    }
+
+
 }
 
 ?>
