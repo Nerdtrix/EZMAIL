@@ -80,11 +80,9 @@ class SMTP
         ];
     }
 
-    private function write(int $code, string $message) : void
+    private function write(string $command) : void
     {
-        $this->socket->writeString(
-            sprintf("%d %s%s", $code, $message, PHP_EOL)
-        );
+        $this->socket->writeString($command . PHP_EOL);
     }
 
     public function connect() : string
@@ -109,13 +107,101 @@ class SMTP
 
         if ($response->code !== 220)
         {
-            $this->socket->close();
             throw new Exception("Invalid announcement response: " . $response->code);
         }
 
         return $response->message;
     }
 
+    private function doHELO() : void
+    {
+        // Sending command.
+        $hostName = $this->hostName;
+
+        if ($this->isSSL)
+        {
+            $hostName = substr($hostName, 6);
+        }
+
+        $this->write("HELO " . $hostName);
+
+        // Reading response.
+        $response = $this->read();
+
+        if ($response->code !== 250)
+        {
+            throw new Exception("Invalid HELO response: " . $response->code);
+        }
+    }
+
+    private function doEHLO() : bool
+    {
+        // Sending command.
+        $hostName = $this->hostName;
+
+        if ($this->isSSL)
+        {
+            $hostName = substr($hostName, 6);
+        }
+
+        $this->write("EHLO " . $hostName);
+
+        // Reading response.
+        $response = $this->read();
+
+        if ($response->code !== 250)
+        {
+            // Cannot use EHLO.
+            return false;
+        }
+
+        return true;
+    }
+
+    public function doHandshake() : void
+    {
+        // Send EHLO.
+        $useHELO = false;
+
+        if (!$this->doEHLO())
+        {
+            $this->doHELO();
+            $useHELO = true;
+        }
+
+        if ($this->isSSL)
+        {
+            // Already secure.
+            return;
+        }
+
+        // Sending STARTTLS.
+        $this->write("STARTTLS");
+
+        // Reading response.
+        $response = $this->read();
+
+        if ($response->code !== 220)
+        {
+            throw new Exception("Invalid STARTTLS response: " . $response->code);
+        }
+
+        // Upgrading socket.
+        $this->socket->enableCrypto();
+
+        // Sending EHLO/HELO.
+        if ($useHELO)
+        {
+            $this->doHELO();
+        }
+        else
+        {
+            if (!$this->doEHLO())
+            {
+                throw new Exception("Unable to do EHLO after STARTTLS");
+            }
+        }
+    }
 }
 
 ?>
