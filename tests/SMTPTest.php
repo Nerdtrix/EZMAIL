@@ -12,9 +12,9 @@ class SMTPTest extends TestCase
     {
         // Fake socket.
         $socket = new FakeSocket;
-        array_push($socket->readStringResults, "220 server rea");
-        array_push($socket->readStringResults, "dy ");
-        array_push($socket->readStringResults, "");
+        array_push($socket->readStringResults, "220-server ");
+        array_push($socket->readStringResults, "220-rea");
+        array_push($socket->readStringResults, "220 dy");
         
         // Test.
         $smtp = new SMTP(
@@ -42,7 +42,6 @@ class SMTPTest extends TestCase
         // Fake socket.
         $socket = new FakeSocket;
         array_push($socket->readStringResults, "420 server not ready");
-        array_push($socket->readStringResults, "");
 
         // Test.
         $smtp = new SMTP(
@@ -82,7 +81,6 @@ class SMTPTest extends TestCase
         // Fake socket.
         $socket = new FakeSocket;
         array_push($socket->readStringResults, "220 server ready");
-        array_push($socket->readStringResults, "");
 
         // Test.
         $smtp = new SMTP(
@@ -112,15 +110,11 @@ class SMTPTest extends TestCase
 
         // connect
         array_push($socket->readStringResults, "220 server ready");
-        array_push($socket->readStringResults, "");
 
         // doHandshake
-        array_push($socket->readStringResults, "250-mailserver"); // EHLO
-        array_push($socket->readStringResults, "");
+        array_push($socket->readStringResults, "250 mailserver"); // EHLO
         array_push($socket->readStringResults, "220 server ready"); // STARTTLS
-        array_push($socket->readStringResults, "");
-        array_push($socket->readStringResults, "250-mailserver"); // EHLO
-        array_push($socket->readStringResults, "");
+        array_push($socket->readStringResults, "250 mailserver"); // EHLO
 
         // Test.
         $smtp = new SMTP(
@@ -153,17 +147,12 @@ class SMTPTest extends TestCase
 
         // connect
         array_push($socket->readStringResults, "220 server ready");
-        array_push($socket->readStringResults, "");
 
         // doHandshake
-        array_push($socket->readStringResults, "420-whatsthat"); // EHLO
-        array_push($socket->readStringResults, "");
-        array_push($socket->readStringResults, "250-mailserver"); // HELO
-        array_push($socket->readStringResults, "");
+        array_push($socket->readStringResults, "420 whatsthat"); // EHLO
+        array_push($socket->readStringResults, "250 mailserver"); // HELO
         array_push($socket->readStringResults, "220 server ready"); // STARTTLS
-        array_push($socket->readStringResults, "");
-        array_push($socket->readStringResults, "250-mailserver"); // HELO
-        array_push($socket->readStringResults, "");
+        array_push($socket->readStringResults, "250 mailserver"); // HELO
 
         // Test.
         $smtp = new SMTP(
@@ -197,13 +186,10 @@ class SMTPTest extends TestCase
 
         // connect
         array_push($socket->readStringResults, "220 server ready");
-        array_push($socket->readStringResults, "");
 
         // doHandshake
-        array_push($socket->readStringResults, "420-whatsthat"); // EHLO
-        array_push($socket->readStringResults, "");
-        array_push($socket->readStringResults, "421-whatsthat"); // HELO
-        array_push($socket->readStringResults, "");
+        array_push($socket->readStringResults, "420 whatsthat"); // EHLO
+        array_push($socket->readStringResults, "421 whatsthat"); // HELO
 
         // Test.
         $smtp = new SMTP(
@@ -246,14 +232,11 @@ class SMTPTest extends TestCase
 
         // connect
         array_push($socket->readStringResults, "220 server ready");
-        array_push($socket->readStringResults, "");
 
         // doHandshake
-        array_push($socket->readStringResults, "250-mailserver"); // EHLO
-        array_push($socket->readStringResults, "");
+        array_push($socket->readStringResults, "250 mailserver"); // EHLO
         array_push($socket->readStringResults, "420 what"); // STARTTLS
-        array_push($socket->readStringResults, "");
-
+        
         // Test.
         $smtp = new SMTP(
             "localhost",
@@ -295,15 +278,11 @@ class SMTPTest extends TestCase
 
         // connect
         array_push($socket->readStringResults, "220 server ready");
-        array_push($socket->readStringResults, "");
 
         // doHandshake
-        array_push($socket->readStringResults, "250-mailserver"); // EHLO
-        array_push($socket->readStringResults, "");
+        array_push($socket->readStringResults, "250 mailserver"); // EHLO
         array_push($socket->readStringResults, "220 server ready"); // STARTTLS
-        array_push($socket->readStringResults, "");
         array_push($socket->readStringResults, "420 what"); // EHLO
-        array_push($socket->readStringResults, "");
 
         // Test.
         $smtp = new SMTP(
@@ -347,17 +326,12 @@ class SMTPTest extends TestCase
 
         // connect
         array_push($socket->readStringResults, "220 server ready");
-        array_push($socket->readStringResults, "");
 
         // doHandshake
-        array_push($socket->readStringResults, "420-whatsthat"); // EHLO
-        array_push($socket->readStringResults, "");
-        array_push($socket->readStringResults, "250-mailserver"); // HELO
-        array_push($socket->readStringResults, "");
+        array_push($socket->readStringResults, "420 whatsthat"); // EHLO
+        array_push($socket->readStringResults, "250 mailserver"); // HELO
         array_push($socket->readStringResults, "220 server ready"); // STARTTLS
-        array_push($socket->readStringResults, "");
         array_push($socket->readStringResults, "420 what"); // HELO
-        array_push($socket->readStringResults, "");
 
         // Test.
         $smtp = new SMTP(
@@ -402,11 +376,9 @@ class SMTPTest extends TestCase
 
         // connect
         array_push($socket->readStringResults, "220 server ready");
-        array_push($socket->readStringResults, "");
 
         // doHandshake
-        array_push($socket->readStringResults, "250-mailserver"); // EHLO
-        array_push($socket->readStringResults, "");
+        array_push($socket->readStringResults, "250 mailserver"); // EHLO
 
         // Test.
         $smtp = new SMTP(

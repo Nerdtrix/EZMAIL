@@ -58,25 +58,32 @@ class SMTP
     {
         // Reading socket.
         $result = "";
+        $code = 0;
 
         while (true)
         {
             $response = $this->socket->readString(self::BUFFER_SIZE);
-            $result .= $response;
-
-            if ($response == "")
+            
+            if (strlen($response) < 4)
             {
+                throw new Exception("Invalid server response length");
+            }
+
+            $code = (int)substr($response, 0, 3);
+            $result .= substr($response, 4);
+
+            if ($response[3] == " ")
+            {
+                // https://stackoverflow.com/a/7776454/5638260
                 // No more to read.
                 break;
             }
         }
 
         // Parsing.
-        $code = (int)substr(trim($result), 0, 3);
-        $message = trim(substr($result, 3));
         return (object)[
             "code" => $code,
-            "message" => $message
+            "message" => $result
         ];
     }
 
