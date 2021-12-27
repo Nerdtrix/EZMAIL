@@ -11,6 +11,7 @@ class FakeSocket implements ISocket
     public string $openHost = "";
     public int $openPort = 0;
     public float $openTimeout = 0;
+    public bool $isCryptoEnabled = false;
     public array $readStringLengths = [];
     public array $readStringResults = [];
     public array $writeStringData = [];
@@ -21,6 +22,11 @@ class FakeSocket implements ISocket
         $this->openHost = $host;
         $this->openPort = $port;
         $this->openTimeout = $timeout;
+    }
+
+    public function enableCrypto(): void
+    {
+        $this->isCryptoEnabled = true;
     }
 
     public function readString(int $lenToRead) : string

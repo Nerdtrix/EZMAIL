@@ -8,6 +8,7 @@ interface ISocket
     public function open(string $host, int $port, float $timeout) : void;
     public function readString(int $lenToRead) : string;
     public function writeString(string $data) : void;
+    public function enableCrypto() : void;
     public function close() : void;
 }
 
@@ -50,6 +51,18 @@ class Socket implements ISocket
                     "errorMessage" => $errorMessage
                 ])
             );
+        }
+    }
+
+    public function enableCrypto(): void
+    {
+        if (!stream_socket_enable_crypto(
+            $this->connection,
+            true,
+            STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT
+        ))
+        {
+            throw new Exception("Unable to enable crypto");
         }
     }
 
