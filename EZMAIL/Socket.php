@@ -76,12 +76,6 @@ class Socket implements ISocket
             throw new Exception("Connection closed");
         }
 
-        if ($meta["unread_bytes"] === 0)
-        {
-            // No more to read.
-            return "";
-        }
-
         // Reading.
         return fgets($this->connection, $lenToRead + 1);
     }
