@@ -58,13 +58,19 @@ class Socket implements ISocket
         // Checking connection state.
         $meta = stream_get_meta_data($this->connection);
 
-        if($meta["eof"])
+        if ($meta["eof"])
         {
             throw new Exception("Connection closed");
         }
 
+        if ($meta["unread_bytes"] === 0)
+        {
+            // No more to read.
+            return "";
+        }
+
         // Reading.
-        return fgets($this->connection, $lenToRead);
+        return fgets($this->connection, $lenToRead + 1);
     }
 
     public function writeString(string $data) : void
