@@ -94,6 +94,7 @@ class SMTP
         if ($this->portNumber == 465 && !$this->isSSL)
         {
             $this->hostName = "ssl://" . $this->hostName;
+            $this->isSSL = true;
         }
 
         // Opening socket.
