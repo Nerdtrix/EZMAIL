@@ -64,6 +64,10 @@ class SMTPTest extends TestCase
         catch (Exception $ex)
         {
             // Assert.
+            $this->assertTrue($socket->isClosed);
+            $this->assertEquals("localhost", $socket->openHost);
+            $this->assertEquals(587, $socket->openPort);
+            $this->assertEquals(30, $socket->openTimeout);
             $this->assertEmpty($socket->readStringResults);
             $this->assertEmpty($socket->writeStringData);
             $this->assertEquals(
@@ -72,8 +76,6 @@ class SMTPTest extends TestCase
             );
         }
     }
-
-    
 }
 
 ?>

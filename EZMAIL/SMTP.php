@@ -100,6 +100,7 @@ class SMTP
 
         if ($response->code !== 220)
         {
+            $this->socket->close();
             throw new Exception("Invalid announcement response: " . $response->code);
         }
 
