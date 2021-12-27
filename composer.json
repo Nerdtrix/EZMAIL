@@ -20,5 +20,8 @@
         "psr-4": {
             "EZMAIL\\": "EZMAIL/"
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
     }
 }
