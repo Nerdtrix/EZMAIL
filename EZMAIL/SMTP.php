@@ -4,13 +4,13 @@ namespace EZMAIL;
 
 use Exception;
 
-define("AUTH_TYPE_STANDARD", 1);
-define("AUTH_TYPE_PLAIN", 2);
-define("AUTH_TYPE_2AUTH", 3);
-
 class SMTP
 {
     const BUFFER_SIZE = 512;
+    
+    const AUTH_TYPE_STANDARD = 1;
+    const AUTH_TYPE_PLAIN = 2;
+    const AUTH_TYPE_2AUTH = 3;
 
     private bool $isSSL;
     private string $hostName;
@@ -23,7 +23,7 @@ class SMTP
         string $hostName,
         int $portNumber,
         float $timeout = 30,
-        int $authType = AUTH_TYPE_STANDARD,
+        int $authType = self::AUTH_TYPE_STANDARD,
         ISocket $socket = null
     )
     {
