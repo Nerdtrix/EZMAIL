@@ -21,6 +21,11 @@
             "EZMAIL\\": "EZMAIL/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "EZMAIL\\Tests\\": "tests/"
+        }
+    },
     "require-dev": {
         "phpunit/phpunit": "^9.5"
     }
