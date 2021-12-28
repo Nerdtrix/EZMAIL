@@ -33,6 +33,7 @@ class SMTP
         ISocket $socket = null
     )
     {
+        $this->isSSL = false;
         $this->hostName = $hostName;
         $this->portNumber = $portNumber;
         $this->username = $username;

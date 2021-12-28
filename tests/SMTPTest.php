@@ -110,11 +110,6 @@ class SMTPTest extends TestCase
     {
         // Fake socket.
         $socket = new FakeSocket;
-
-        // connect
-        array_push($socket->readStringResults, "220 server ready");
-
-        // doHandshake
         array_push($socket->readStringResults, "250 mailserver"); // EHLO
         array_push($socket->readStringResults, "220 server ready"); // STARTTLS
         array_push($socket->readStringResults, "250 mailserver"); // EHLO
@@ -127,8 +122,6 @@ class SMTPTest extends TestCase
             "password",
             socket: $socket
         );
-        $smtp->connect();
-        $socket->writeStringData = [];
         $smtp->doHandshake();
 
         // Assert.
@@ -146,11 +139,6 @@ class SMTPTest extends TestCase
     {
         // Fake socket.
         $socket = new FakeSocket;
-
-        // connect
-        array_push($socket->readStringResults, "220 server ready");
-
-        // doHandshake
         array_push($socket->readStringResults, "420 whatsthat"); // EHLO
         array_push($socket->readStringResults, "250 mailserver"); // HELO
         array_push($socket->readStringResults, "220 server ready"); // STARTTLS
@@ -164,8 +152,6 @@ class SMTPTest extends TestCase
             "password",
             socket: $socket
         );
-        $smtp->connect();
-        $socket->writeStringData = [];
         $smtp->doHandshake();
 
         // Assert.
@@ -184,11 +170,6 @@ class SMTPTest extends TestCase
     {
         // Fake socket.
         $socket = new FakeSocket;
-
-        // connect
-        array_push($socket->readStringResults, "220 server ready");
-
-        // doHandshake
         array_push($socket->readStringResults, "420 whatsthat"); // EHLO
         array_push($socket->readStringResults, "421 whatsthat"); // HELO
 
@@ -200,8 +181,6 @@ class SMTPTest extends TestCase
             "password",
             socket: $socket
         );
-        $smtp->connect();
-        $socket->writeStringData = [];
 
         try
         {
@@ -229,11 +208,6 @@ class SMTPTest extends TestCase
     {
         // Fake socket.
         $socket = new FakeSocket;
-
-        // connect
-        array_push($socket->readStringResults, "220 server ready");
-
-        // doHandshake
         array_push($socket->readStringResults, "250 mailserver"); // EHLO
         array_push($socket->readStringResults, "420 what"); // STARTTLS
         
@@ -245,8 +219,6 @@ class SMTPTest extends TestCase
             "password",
             socket: $socket
         );
-        $smtp->connect();
-        $socket->writeStringData = [];
 
         try
         {
@@ -274,11 +246,6 @@ class SMTPTest extends TestCase
     {
         // Fake socket.
         $socket = new FakeSocket;
-
-        // connect
-        array_push($socket->readStringResults, "220 server ready");
-
-        // doHandshake
         array_push($socket->readStringResults, "250 mailserver"); // EHLO
         array_push($socket->readStringResults, "220 server ready"); // STARTTLS
         array_push($socket->readStringResults, "420 what"); // EHLO
@@ -291,8 +258,6 @@ class SMTPTest extends TestCase
             "password",
             socket: $socket
         );
-        $smtp->connect();
-        $socket->writeStringData = [];
 
         try
         {
@@ -321,11 +286,6 @@ class SMTPTest extends TestCase
     {
         // Fake socket.
         $socket = new FakeSocket;
-
-        // connect
-        array_push($socket->readStringResults, "220 server ready");
-
-        // doHandshake
         array_push($socket->readStringResults, "420 whatsthat"); // EHLO
         array_push($socket->readStringResults, "250 mailserver"); // HELO
         array_push($socket->readStringResults, "220 server ready"); // STARTTLS
@@ -339,8 +299,6 @@ class SMTPTest extends TestCase
             "password",
             socket: $socket
         );
-        $smtp->connect();
-        $socket->writeStringData = [];
         
         try
         {
