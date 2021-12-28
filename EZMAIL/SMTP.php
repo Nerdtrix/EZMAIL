@@ -285,6 +285,28 @@ class SMTP
         }
     }
 
+    private function do2Auth(string $username, string $authToken) : void
+    {
+        // Sending AUTH XOAUTH2.
+        $token = base64_encode(sprintf("user=%s%sauth=Bearer %s%s%s",
+            $username, chr(1),
+            $authToken, chr(1), chr(1)
+        ));
+        $this->write("AUTH XOAUTH2 " . $token);
+
+        // Reading response.
+        $response = $this->read();
+
+        if ($response->code === 535) // Maybe the whole 530 range?
+        {
+            throw new Exception("SMTP authentication failed");
+        }
+        else if ($response->code !== 235)
+        {
+            throw new Exception("Invalid SMTP authentication response: " . $response->code);
+        }
+    }
+
     public function doAuth(
         string $username,
         string $password,
@@ -298,6 +320,10 @@ class SMTP
         else if ($authType == self::AUTH_TYPE_PLAIN)
         {
             $this->doPlainAuth($username, $password);
+        }
+        else if ($authType == self::AUTH_TYPE_2AUTH)
+        {
+            $this->do2Auth($username, $password);
         }
         else
         {

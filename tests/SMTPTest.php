@@ -736,6 +736,118 @@ class SMTPTest extends TestCase
         }
     }
 
+    public function testDoAuthHandle2Auth()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "235 Authentication successful"); // AUTH XOAUTH2
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+        $smtp->doAuth(
+            "user",
+            "password123",
+            SMTP::AUTH_TYPE_2AUTH
+        );
+
+        // Assert.
+        $this->assertFalse($socket->isClosed);
+        $this->assertEmpty($socket->readStringResults);
+
+        $this->assertEquals(1, count($socket->writeStringData));
+        $token = base64_encode(sprintf("user=%s%sauth=Bearer %s%s%s",
+            "user", chr(1),
+            "password123", chr(1), chr(1)
+        ));
+        $this->assertEquals("AUTH XOAUTH2 " . $token . SMTP::CRLF, $socket->writeStringData[0]);
+    }
+
+    public function testDoAuthHandle2AuthAuthenticationFailed()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "535 Authentication failed"); // AUTH XOAUTH2
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+
+        try
+        {
+            $smtp->doAuth(
+                "user",
+                "password123",
+                SMTP::AUTH_TYPE_2AUTH
+            );
+
+            // No error.
+            $this->fail();
+        }
+        catch (Exception $ex)
+        {
+            // Assert.
+            $this->assertFalse($socket->isClosed);
+            $this->assertEmpty($socket->readStringResults);
+
+            $this->assertEquals(1, count($socket->writeStringData));
+            $token = base64_encode(sprintf("user=%s%sauth=Bearer %s%s%s",
+                "user", chr(1),
+                "password123", chr(1), chr(1)
+            ));
+            $this->assertEquals("AUTH XOAUTH2 " . $token . SMTP::CRLF, $socket->writeStringData[0]);
+
+            $this->assertEquals("SMTP authentication failed", $ex->getMessage());
+        }
+    }
+
+    public function testDoAuthHandle2AuthInvalidAuthenticationResponse()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "420 what"); // AUTH XOAUTH2
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+
+        try
+        {
+            $smtp->doAuth(
+                "user",
+                "password123",
+                SMTP::AUTH_TYPE_2AUTH
+            );
+
+            // No error.
+            $this->fail();
+        }
+        catch (Exception $ex)
+        {
+            // Assert.
+            $this->assertFalse($socket->isClosed);
+            $this->assertEmpty($socket->readStringResults);
+
+            $this->assertEquals(1, count($socket->writeStringData));
+            $token = base64_encode(sprintf("user=%s%sauth=Bearer %s%s%s",
+                "user", chr(1),
+                "password123", chr(1), chr(1)
+            ));
+            $this->assertEquals("AUTH XOAUTH2 " . $token . SMTP::CRLF, $socket->writeStringData[0]);
+
+            $this->assertEquals("Invalid SMTP authentication response: 420", $ex->getMessage());
+        }
+    }
+
     public function testDoAuthHandleUnsupportedType()
     {
         // Fake socket.
