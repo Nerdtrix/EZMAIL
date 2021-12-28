@@ -18,7 +18,7 @@ class SMTP
     private string $hostName;
     private string $portNumber;
     private float $timeout;
-    private ISocket $socket;
+    private ?ISocket $socket;
 
     public function __construct(
         string $hostName,
@@ -222,7 +222,7 @@ class SMTP
             throw new Exception("Invalid AUTH LOGIN response: " . $response->code);
         }
 
-        if ($response->messages[0] !== base64_encode("Username:"))
+        if (base64_decode($response->messages[0]) !== "Username:")
         {
             throw new Exception("Invalid SMTP username prompt");
         }
@@ -238,7 +238,7 @@ class SMTP
             throw new Exception("Invalid AUTH LOGIN username response: " . $response->code);
         }
 
-        if ($response->messages[0] !== base64_encode("Password:"))
+        if (base64_decode($response->messages[0]) !== "Password:")
         {
             throw new Exception("Invalid SMTP password prompt");
         }
