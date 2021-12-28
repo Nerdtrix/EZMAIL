@@ -22,8 +22,7 @@ class SMTPTest extends TestCase
             587,
             "user",
             "password",
-            socket: $socket,
-            autoConnect: false
+            socket: $socket
         );
         $announcement = $smtp->connect();
 
@@ -49,8 +48,7 @@ class SMTPTest extends TestCase
             587,
             "user",
             "password",
-            socket: $socket,
-            autoConnect: false
+            socket: $socket
         );
         
         try
@@ -88,8 +86,7 @@ class SMTPTest extends TestCase
             465,
             "user",
             "password",
-            socket: $socket,
-            autoConnect: false
+            socket: $socket
         );
         $announcement = $smtp->connect();
 
@@ -122,8 +119,7 @@ class SMTPTest extends TestCase
             587,
             "user",
             "password",
-            socket: $socket,
-            autoConnect: false
+            socket: $socket
         );
         $smtp->connect();
         $socket->writeStringData = [];
@@ -160,8 +156,7 @@ class SMTPTest extends TestCase
             587,
             "user",
             "password",
-            socket: $socket,
-            autoConnect: false
+            socket: $socket
         );
         $smtp->connect();
         $socket->writeStringData = [];
@@ -197,8 +192,7 @@ class SMTPTest extends TestCase
             587,
             "user",
             "password",
-            socket: $socket,
-            autoConnect: false
+            socket: $socket
         );
         $smtp->connect();
         $socket->writeStringData = [];
@@ -243,8 +237,7 @@ class SMTPTest extends TestCase
             587,
             "user",
             "password",
-            socket: $socket,
-            autoConnect: false
+            socket: $socket
         );
         $smtp->connect();
         $socket->writeStringData = [];
@@ -290,8 +283,7 @@ class SMTPTest extends TestCase
             587,
             "user",
             "password",
-            socket: $socket,
-            autoConnect: false
+            socket: $socket
         );
         $smtp->connect();
         $socket->writeStringData = [];
@@ -339,8 +331,7 @@ class SMTPTest extends TestCase
             587,
             "user",
             "password",
-            socket: $socket,
-            autoConnect: false
+            socket: $socket
         );
         $smtp->connect();
         $socket->writeStringData = [];
@@ -386,8 +377,7 @@ class SMTPTest extends TestCase
             465,
             "user",
             "password",
-            socket: $socket,
-            autoConnect: false
+            socket: $socket
         );
         $smtp->connect();
         $socket->writeStringData = [];

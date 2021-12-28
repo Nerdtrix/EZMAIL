@@ -30,8 +30,7 @@ class SMTP
         bool $useSMTP = true,
         float $timeout = 30,
         int $authType = AUTH_TYPE_STANDARD,
-        ISocket $socket = null,
-        bool $autoConnect = true,
+        ISocket $socket = null
     )
     {
         $this->hostName = $hostName;
@@ -46,11 +45,6 @@ class SMTP
         if ($this->socket == null)
         {
             $this->socket = new Socket;
-        }
-
-        if ($autoConnect)
-        {
-            // TODO
         }
     }
 
