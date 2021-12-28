@@ -204,6 +204,11 @@ class SMTP
         }
     }
 
+    private function isInvalidAuthenticationCode(int $code) : bool
+    {
+        return $code == 535;
+    }
+
     private function doStandardAuth(string $username, string $password) : void
     {
         // Sending AUTH LOGIN.
@@ -244,7 +249,7 @@ class SMTP
         // Reading response.
         $response = $this->read();
 
-        if ($response->code === 535) // Maybe the whole 530 range?
+        if ($this->isInvalidAuthenticationCode($response->code))
         {
             throw new Exception("SMTP authentication failed");
         }
@@ -275,7 +280,7 @@ class SMTP
         // Reading response.
         $response = $this->read();
 
-        if ($response->code === 535) // Maybe the whole 530 range?
+        if ($this->isInvalidAuthenticationCode($response->code))
         {
             throw new Exception("SMTP authentication failed");
         }
@@ -297,7 +302,7 @@ class SMTP
         // Reading response.
         $response = $this->read();
 
-        if ($response->code === 535) // Maybe the whole 530 range?
+        if ($this->isInvalidAuthenticationCode($response->code))
         {
             throw new Exception("SMTP authentication failed");
         }
