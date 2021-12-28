@@ -2,6 +2,8 @@
 
 namespace EZMAIL;
 
+define("PHP_CRLF", "\r\n");
+
 interface ISocket
 {
     public function open(string $host, int $port, float $timeout) : void;

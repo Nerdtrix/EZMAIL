@@ -122,9 +122,9 @@ class SMTPTest extends TestCase
         $this->assertEmpty($socket->readStringResults);
         
         $this->assertEquals(3, count($socket->writeStringData));
-        $this->assertEquals("EHLO localhost" . SMTP::CRLF, $socket->writeStringData[0]);
-        $this->assertEquals("STARTTLS" . SMTP::CRLF, $socket->writeStringData[1]);
-        $this->assertEquals("EHLO localhost" . SMTP::CRLF, $socket->writeStringData[2]);
+        $this->assertEquals("EHLO localhost" . PHP_CRLF, $socket->writeStringData[0]);
+        $this->assertEquals("STARTTLS" . PHP_CRLF, $socket->writeStringData[1]);
+        $this->assertEquals("EHLO localhost" . PHP_CRLF, $socket->writeStringData[2]);
     }
 
     public function testDoHandshakeWithHELO()
@@ -150,10 +150,10 @@ class SMTPTest extends TestCase
         $this->assertEmpty($socket->readStringResults);
         
         $this->assertEquals(4, count($socket->writeStringData));
-        $this->assertEquals("EHLO localhost" . SMTP::CRLF, $socket->writeStringData[0]);
-        $this->assertEquals("HELO localhost" . SMTP::CRLF, $socket->writeStringData[1]);
-        $this->assertEquals("STARTTLS" . SMTP::CRLF, $socket->writeStringData[2]);
-        $this->assertEquals("HELO localhost" . SMTP::CRLF, $socket->writeStringData[3]);
+        $this->assertEquals("EHLO localhost" . PHP_CRLF, $socket->writeStringData[0]);
+        $this->assertEquals("HELO localhost" . PHP_CRLF, $socket->writeStringData[1]);
+        $this->assertEquals("STARTTLS" . PHP_CRLF, $socket->writeStringData[2]);
+        $this->assertEquals("HELO localhost" . PHP_CRLF, $socket->writeStringData[3]);
     }
 
     public function testDoHandshakeHandleHELOError()
@@ -185,8 +185,8 @@ class SMTPTest extends TestCase
             $this->assertEmpty($socket->readStringResults);
             
             $this->assertEquals(2, count($socket->writeStringData));
-            $this->assertEquals("EHLO localhost" . SMTP::CRLF, $socket->writeStringData[0]);
-            $this->assertEquals("HELO localhost" . SMTP::CRLF, $socket->writeStringData[1]);
+            $this->assertEquals("EHLO localhost" . PHP_CRLF, $socket->writeStringData[0]);
+            $this->assertEquals("HELO localhost" . PHP_CRLF, $socket->writeStringData[1]);
 
             $this->assertEquals("Invalid HELO response: 421", $ex->getMessage());
         }
@@ -221,8 +221,8 @@ class SMTPTest extends TestCase
             $this->assertEmpty($socket->readStringResults);
             
             $this->assertEquals(2, count($socket->writeStringData));
-            $this->assertEquals("EHLO localhost" . SMTP::CRLF, $socket->writeStringData[0]);
-            $this->assertEquals("STARTTLS" . SMTP::CRLF, $socket->writeStringData[1]);
+            $this->assertEquals("EHLO localhost" . PHP_CRLF, $socket->writeStringData[0]);
+            $this->assertEquals("STARTTLS" . PHP_CRLF, $socket->writeStringData[1]);
 
             $this->assertEquals("Invalid STARTTLS response: 420", $ex->getMessage());
         }
@@ -258,9 +258,9 @@ class SMTPTest extends TestCase
             $this->assertEmpty($socket->readStringResults);
             
             $this->assertEquals(3, count($socket->writeStringData));
-            $this->assertEquals("EHLO localhost" . SMTP::CRLF, $socket->writeStringData[0]);
-            $this->assertEquals("STARTTLS" . SMTP::CRLF, $socket->writeStringData[1]);
-            $this->assertEquals("EHLO localhost" . SMTP::CRLF, $socket->writeStringData[2]);
+            $this->assertEquals("EHLO localhost" . PHP_CRLF, $socket->writeStringData[0]);
+            $this->assertEquals("STARTTLS" . PHP_CRLF, $socket->writeStringData[1]);
+            $this->assertEquals("EHLO localhost" . PHP_CRLF, $socket->writeStringData[2]);
 
             $this->assertEquals("Unable to do EHLO after STARTTLS", $ex->getMessage());
         }
@@ -297,10 +297,10 @@ class SMTPTest extends TestCase
             $this->assertEmpty($socket->readStringResults);
             
             $this->assertEquals(4, count($socket->writeStringData));
-            $this->assertEquals("EHLO localhost" . SMTP::CRLF, $socket->writeStringData[0]);
-            $this->assertEquals("HELO localhost" . SMTP::CRLF, $socket->writeStringData[1]);
-            $this->assertEquals("STARTTLS" . SMTP::CRLF, $socket->writeStringData[2]);
-            $this->assertEquals("HELO localhost" . SMTP::CRLF, $socket->writeStringData[3]);
+            $this->assertEquals("EHLO localhost" . PHP_CRLF, $socket->writeStringData[0]);
+            $this->assertEquals("HELO localhost" . PHP_CRLF, $socket->writeStringData[1]);
+            $this->assertEquals("STARTTLS" . PHP_CRLF, $socket->writeStringData[2]);
+            $this->assertEquals("HELO localhost" . PHP_CRLF, $socket->writeStringData[3]);
 
             $this->assertEquals("Invalid HELO response: 420", $ex->getMessage());
         }
@@ -333,7 +333,7 @@ class SMTPTest extends TestCase
         $this->assertEmpty($socket->readStringResults);
 
         $this->assertEquals(1, count($socket->writeStringData));
-        $this->assertEquals("EHLO localhost" . SMTP::CRLF, $socket->writeStringData[0]);
+        $this->assertEquals("EHLO localhost" . PHP_CRLF, $socket->writeStringData[0]);
     }
 
     public function testDoAuth()
@@ -360,9 +360,9 @@ class SMTPTest extends TestCase
         $this->assertEmpty($socket->readStringResults);
 
         $this->assertEquals(3, count($socket->writeStringData));
-        $this->assertEquals("AUTH LOGIN" . SMTP::CRLF, $socket->writeStringData[0]);
-        $this->assertEquals(base64_encode("user") . SMTP::CRLF, $socket->writeStringData[1]);
-        $this->assertEquals(base64_encode("password123") . SMTP::CRLF, $socket->writeStringData[2]);
+        $this->assertEquals("AUTH LOGIN" . PHP_CRLF, $socket->writeStringData[0]);
+        $this->assertEquals(base64_encode("user") . PHP_CRLF, $socket->writeStringData[1]);
+        $this->assertEquals(base64_encode("password123") . PHP_CRLF, $socket->writeStringData[2]);
     }
 
     public function testDoAuthHandleInvalidUsernameCode()
@@ -395,7 +395,7 @@ class SMTPTest extends TestCase
             $this->assertEmpty($socket->readStringResults);
 
             $this->assertEquals(1, count($socket->writeStringData));
-            $this->assertEquals("AUTH LOGIN" . SMTP::CRLF, $socket->writeStringData[0]);
+            $this->assertEquals("AUTH LOGIN" . PHP_CRLF, $socket->writeStringData[0]);
 
             $this->assertEquals("Invalid AUTH LOGIN response: 420", $ex->getMessage());
         }
@@ -431,7 +431,7 @@ class SMTPTest extends TestCase
             $this->assertEmpty($socket->readStringResults);
 
             $this->assertEquals(1, count($socket->writeStringData));
-            $this->assertEquals("AUTH LOGIN" . SMTP::CRLF, $socket->writeStringData[0]);
+            $this->assertEquals("AUTH LOGIN" . PHP_CRLF, $socket->writeStringData[0]);
 
             $this->assertEquals("Invalid SMTP username prompt", $ex->getMessage());
         }
@@ -468,8 +468,8 @@ class SMTPTest extends TestCase
             $this->assertEmpty($socket->readStringResults);
 
             $this->assertEquals(2, count($socket->writeStringData));
-            $this->assertEquals("AUTH LOGIN" . SMTP::CRLF, $socket->writeStringData[0]);
-            $this->assertEquals(base64_encode("user") . SMTP::CRLF, $socket->writeStringData[1]);
+            $this->assertEquals("AUTH LOGIN" . PHP_CRLF, $socket->writeStringData[0]);
+            $this->assertEquals(base64_encode("user") . PHP_CRLF, $socket->writeStringData[1]);
 
             $this->assertEquals("Invalid AUTH LOGIN username response: 420", $ex->getMessage());
         }
@@ -506,8 +506,8 @@ class SMTPTest extends TestCase
             $this->assertEmpty($socket->readStringResults);
 
             $this->assertEquals(2, count($socket->writeStringData));
-            $this->assertEquals("AUTH LOGIN" . SMTP::CRLF, $socket->writeStringData[0]);
-            $this->assertEquals(base64_encode("user") . SMTP::CRLF, $socket->writeStringData[1]);
+            $this->assertEquals("AUTH LOGIN" . PHP_CRLF, $socket->writeStringData[0]);
+            $this->assertEquals(base64_encode("user") . PHP_CRLF, $socket->writeStringData[1]);
 
             $this->assertEquals("Invalid SMTP password prompt", $ex->getMessage());
         }
@@ -545,9 +545,9 @@ class SMTPTest extends TestCase
             $this->assertEmpty($socket->readStringResults);
 
             $this->assertEquals(3, count($socket->writeStringData));
-            $this->assertEquals("AUTH LOGIN" . SMTP::CRLF, $socket->writeStringData[0]);
-            $this->assertEquals(base64_encode("user") . SMTP::CRLF, $socket->writeStringData[1]);
-            $this->assertEquals(base64_encode("password123") . SMTP::CRLF, $socket->writeStringData[2]);
+            $this->assertEquals("AUTH LOGIN" . PHP_CRLF, $socket->writeStringData[0]);
+            $this->assertEquals(base64_encode("user") . PHP_CRLF, $socket->writeStringData[1]);
+            $this->assertEquals(base64_encode("password123") . PHP_CRLF, $socket->writeStringData[2]);
 
             $this->assertEquals("SMTP authentication failed", $ex->getMessage());
         }
@@ -585,9 +585,9 @@ class SMTPTest extends TestCase
             $this->assertEmpty($socket->readStringResults);
 
             $this->assertEquals(3, count($socket->writeStringData));
-            $this->assertEquals("AUTH LOGIN" . SMTP::CRLF, $socket->writeStringData[0]);
-            $this->assertEquals(base64_encode("user") . SMTP::CRLF, $socket->writeStringData[1]);
-            $this->assertEquals(base64_encode("password123") . SMTP::CRLF, $socket->writeStringData[2]);
+            $this->assertEquals("AUTH LOGIN" . PHP_CRLF, $socket->writeStringData[0]);
+            $this->assertEquals(base64_encode("user") . PHP_CRLF, $socket->writeStringData[1]);
+            $this->assertEquals(base64_encode("password123") . PHP_CRLF, $socket->writeStringData[2]);
 
             $this->assertEquals("Invalid SMTP authentication response: 420", $ex->getMessage());
         }
@@ -617,8 +617,8 @@ class SMTPTest extends TestCase
         $this->assertEmpty($socket->readStringResults);
 
         $this->assertEquals(2, count($socket->writeStringData));
-        $this->assertEquals("AUTH PLAIN" . SMTP::CRLF, $socket->writeStringData[0]);
-        $this->assertEquals(base64_encode("\0user\0password123") . SMTP::CRLF, $socket->writeStringData[1]);
+        $this->assertEquals("AUTH PLAIN" . PHP_CRLF, $socket->writeStringData[0]);
+        $this->assertEquals(base64_encode("\0user\0password123") . PHP_CRLF, $socket->writeStringData[1]);
     }
 
     public function testDoAuthHandlePlainInvalidAuthPlainResponseCode()
@@ -652,7 +652,7 @@ class SMTPTest extends TestCase
             $this->assertEmpty($socket->readStringResults);
 
             $this->assertEquals(1, count($socket->writeStringData));
-            $this->assertEquals("AUTH PLAIN" . SMTP::CRLF, $socket->writeStringData[0]);
+            $this->assertEquals("AUTH PLAIN" . PHP_CRLF, $socket->writeStringData[0]);
 
             $this->assertEquals("Invalid AUTH PLAIN response: 420", $ex->getMessage());
         }
@@ -690,8 +690,8 @@ class SMTPTest extends TestCase
             $this->assertEmpty($socket->readStringResults);
 
             $this->assertEquals(2, count($socket->writeStringData));
-            $this->assertEquals("AUTH PLAIN" . SMTP::CRLF, $socket->writeStringData[0]);
-            $this->assertEquals(base64_encode("\0user\0password123") . SMTP::CRLF, $socket->writeStringData[1]);
+            $this->assertEquals("AUTH PLAIN" . PHP_CRLF, $socket->writeStringData[0]);
+            $this->assertEquals(base64_encode("\0user\0password123") . PHP_CRLF, $socket->writeStringData[1]);
 
             $this->assertEquals("SMTP authentication failed", $ex->getMessage());
         }
@@ -729,8 +729,8 @@ class SMTPTest extends TestCase
             $this->assertEmpty($socket->readStringResults);
 
             $this->assertEquals(2, count($socket->writeStringData));
-            $this->assertEquals("AUTH PLAIN" . SMTP::CRLF, $socket->writeStringData[0]);
-            $this->assertEquals(base64_encode("\0user\0password123") . SMTP::CRLF, $socket->writeStringData[1]);
+            $this->assertEquals("AUTH PLAIN" . PHP_CRLF, $socket->writeStringData[0]);
+            $this->assertEquals(base64_encode("\0user\0password123") . PHP_CRLF, $socket->writeStringData[1]);
 
             $this->assertEquals("Invalid SMTP authentication response: 420", $ex->getMessage());
         }
@@ -763,7 +763,7 @@ class SMTPTest extends TestCase
             "user", chr(1),
             "password123", chr(1), chr(1)
         ));
-        $this->assertEquals("AUTH XOAUTH2 " . $token . SMTP::CRLF, $socket->writeStringData[0]);
+        $this->assertEquals("AUTH XOAUTH2 " . $token . PHP_CRLF, $socket->writeStringData[0]);
     }
 
     public function testDoAuthHandle2AuthAuthenticationFailed()
@@ -801,7 +801,7 @@ class SMTPTest extends TestCase
                 "user", chr(1),
                 "password123", chr(1), chr(1)
             ));
-            $this->assertEquals("AUTH XOAUTH2 " . $token . SMTP::CRLF, $socket->writeStringData[0]);
+            $this->assertEquals("AUTH XOAUTH2 " . $token . PHP_CRLF, $socket->writeStringData[0]);
 
             $this->assertEquals("SMTP authentication failed", $ex->getMessage());
         }
@@ -842,7 +842,7 @@ class SMTPTest extends TestCase
                 "user", chr(1),
                 "password123", chr(1), chr(1)
             ));
-            $this->assertEquals("AUTH XOAUTH2 " . $token . SMTP::CRLF, $socket->writeStringData[0]);
+            $this->assertEquals("AUTH XOAUTH2 " . $token . PHP_CRLF, $socket->writeStringData[0]);
 
             $this->assertEquals("Invalid SMTP authentication response: 420", $ex->getMessage());
         }
@@ -896,7 +896,7 @@ class SMTPTest extends TestCase
         $this->assertTrue($socket->isClosed);
 
         $this->assertEquals(1, count($socket->writeStringData));
-        $this->assertEquals("QUIT" . SMTP::CRLF, $socket->writeStringData[0]);
+        $this->assertEquals("QUIT" . PHP_CRLF, $socket->writeStringData[0]);
     }
 
     public function testQuitIgnoreError()

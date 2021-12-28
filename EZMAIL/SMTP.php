@@ -8,7 +8,6 @@ use InvalidArgumentException;
 class SMTP
 {
     const BUFFER_SIZE = 512;
-    const CRLF = "\r\n";
     
     const AUTH_TYPE_STANDARD = 1;
     const AUTH_TYPE_PLAIN = 2;
@@ -83,7 +82,7 @@ class SMTP
 
     private function write(string $command) : void
     {
-        $this->socket->writeString($command . self::CRLF);
+        $this->socket->writeString($command . PHP_CRLF);
     }
 
     public function connect() : array
