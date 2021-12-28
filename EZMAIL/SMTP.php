@@ -3,10 +3,12 @@
 namespace EZMAIL;
 
 use Exception;
+use InvalidArgumentException;
 
 class SMTP
 {
     const BUFFER_SIZE = 512;
+    const CRLF = "\r\n";
     
     const AUTH_TYPE_STANDARD = 1;
     const AUTH_TYPE_PLAIN = 2;
@@ -16,14 +18,12 @@ class SMTP
     private string $hostName;
     private string $portNumber;
     private float $timeout;
-    private int $authType;
     private ISocket $socket;
 
     public function __construct(
         string $hostName,
         int $portNumber,
         float $timeout = 30,
-        int $authType = self::AUTH_TYPE_STANDARD,
         ISocket $socket = null
     )
     {
@@ -31,7 +31,6 @@ class SMTP
         $this->hostName = $hostName;
         $this->portNumber = $portNumber;
         $this->timeout = $timeout;
-        $this->authType = $authType;
         $this->socket = $socket;
 
         if ($this->socket == null)
@@ -75,7 +74,7 @@ class SMTP
 
     private function write(string $command) : void
     {
-        $this->socket->writeString($command . PHP_EOL);
+        $this->socket->writeString($command . self::CRLF);
     }
 
     public function connect() : array
@@ -193,6 +192,72 @@ class SMTP
             {
                 throw new Exception("Unable to do EHLO after STARTTLS");
             }
+        }
+    }
+
+    private function doStandardAuth(string $username, string $password) : void
+    {
+        // Sending AUTH LOGIN.
+        $this->write("AUTH LOGIN");
+
+        // Reading response.
+        $response = $this->read();
+
+        if ($response->code !== 334)
+        {
+            throw new Exception("Invalid AUTH LOGIN response: " . $response->code);
+        }
+
+        if ($response->messages[0] !== base64_encode("Username:"))
+        {
+            throw new Exception("Invalid SMTP username prompt");
+        }
+
+        // Sending username.
+        $this->write(base64_encode($username));
+
+        // Reading response.
+        $response = $this->read();
+
+        if ($response->code !== 334)
+        {
+            throw new Exception("Invalid AUTH LOGIN username response: " . $response->code);
+        }
+
+        if ($response->messages[0] !== base64_encode("Password:"))
+        {
+            throw new Exception("Invalid SMTP password prompt");
+        }
+
+        // Sending password.
+        $this->write(base64_encode($password));
+
+        // Reading response.
+        $response = $this->read();
+
+        if ($response->code === 535) // Maybe the whole 530 range?
+        {
+            throw new Exception("SMTP authentication failed");
+        }
+        else if ($response->code !== 235)
+        {
+            throw new Exception("Invalid SMTP authentication response: " . $response->code);
+        }
+    }
+
+    public function doAuth(
+        string $username,
+        string $password,
+        int $authType = self::AUTH_TYPE_STANDARD
+    ) : void
+    {
+        if ($authType == self::AUTH_TYPE_STANDARD)
+        {
+            $this->doStandardAuth($username, $password);
+        }
+        else
+        {
+            throw new InvalidArgumentException("Invalid auth type: " . $authType);
         }
     }
 }
