@@ -12,9 +12,9 @@ class SMTPTest extends TestCase
     {
         // Fake socket.
         $socket = new FakeSocket;
-        array_push($socket->readStringResults, "220-server ");
-        array_push($socket->readStringResults, "220-rea");
-        array_push($socket->readStringResults, "220 dy");
+        array_push($socket->readStringResults, "220-server");
+        array_push($socket->readStringResults, "220-is");
+        array_push($socket->readStringResults, "220 ready");
         
         // Test.
         $smtp = new SMTP(
@@ -24,7 +24,7 @@ class SMTPTest extends TestCase
             "password",
             socket: $socket
         );
-        $announcement = $smtp->connect();
+        $announcements = $smtp->connect();
 
         // Assert.
         $this->assertFalse($socket->isClosed);
@@ -33,7 +33,11 @@ class SMTPTest extends TestCase
         $this->assertEquals(30, $socket->openTimeout);
         $this->assertEmpty($socket->readStringResults);
         $this->assertEmpty($socket->writeStringData);
-        $this->assertEquals("server ready", $announcement);
+
+        $this->assertEquals(3, count($announcements));
+        $this->assertEquals("server", $announcements[0]);
+        $this->assertEquals("is", $announcements[1]);
+        $this->assertEquals("ready", $announcements[2]);
     }
 
     public function testConnectWithout220Response()
@@ -88,7 +92,7 @@ class SMTPTest extends TestCase
             "password",
             socket: $socket
         );
-        $announcement = $smtp->connect();
+        $announcements = $smtp->connect();
 
         // Assert.
         $this->assertFalse($socket->isClosed);
@@ -97,7 +101,9 @@ class SMTPTest extends TestCase
         $this->assertEquals(30, $socket->openTimeout);
         $this->assertEmpty($socket->readStringResults);
         $this->assertEmpty($socket->writeStringData);
-        $this->assertEquals("server ready", $announcement);
+
+        $this->assertEquals(1, count($announcements));
+        $this->assertEquals("server ready", $announcements[0]);
     }
 
     public function testDoHandshake()

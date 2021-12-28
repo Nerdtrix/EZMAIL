@@ -51,7 +51,7 @@ class SMTP
     private function read() : object
     {
         // Reading socket.
-        $result = "";
+        $messages = [];
         $code = 0;
 
         while (true)
@@ -64,7 +64,7 @@ class SMTP
             }
 
             $code = (int)substr($response, 0, 3);
-            $result .= substr($response, 4);
+            array_push($messages, substr($response, 4));
 
             if ($response[3] == " ")
             {
@@ -77,7 +77,7 @@ class SMTP
         // Parsing.
         return (object)[
             "code" => $code,
-            "message" => $result
+            "messages" => $messages
         ];
     }
 
@@ -86,7 +86,7 @@ class SMTP
         $this->socket->writeString($command . PHP_EOL);
     }
 
-    public function connect() : string
+    public function connect() : array
     {
         $this->isSSL = strpos($this->hostName, "ssl://") !== false;
 
@@ -111,7 +111,7 @@ class SMTP
             throw new Exception("Invalid announcement response: " . $response->code);
         }
 
-        return $response->message;
+        return $response->messages;
     }
 
     private function doHELO() : void
