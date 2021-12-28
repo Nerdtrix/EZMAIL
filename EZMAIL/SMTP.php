@@ -15,9 +15,6 @@ class SMTP
     private bool $isSSL;
     private string $hostName;
     private string $portNumber;
-    private string $username;
-    private string $password;
-    private bool $useSMTP;
     private float $timeout;
     private int $authType;
     private ISocket $socket;
@@ -25,9 +22,6 @@ class SMTP
     public function __construct(
         string $hostName,
         int $portNumber,
-        string $username,
-        string $password,
-        bool $useSMTP = true,
         float $timeout = 30,
         int $authType = AUTH_TYPE_STANDARD,
         ISocket $socket = null
@@ -36,9 +30,6 @@ class SMTP
         $this->isSSL = false;
         $this->hostName = $hostName;
         $this->portNumber = $portNumber;
-        $this->username = $username;
-        $this->password = $password;
-        $this->useSMTP = $useSMTP;
         $this->timeout = $timeout;
         $this->authType = $authType;
         $this->socket = $socket;

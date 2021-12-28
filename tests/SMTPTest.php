@@ -20,8 +20,6 @@ class SMTPTest extends TestCase
         $smtp = new SMTP(
             "localhost",
             587,
-            "user",
-            "password",
             socket: $socket
         );
         $announcements = $smtp->connect();
@@ -50,8 +48,6 @@ class SMTPTest extends TestCase
         $smtp = new SMTP(
             "localhost",
             587,
-            "user",
-            "password",
             socket: $socket
         );
         
@@ -88,8 +84,6 @@ class SMTPTest extends TestCase
         $smtp = new SMTP(
             "localhost",
             465,
-            "user",
-            "password",
             socket: $socket
         );
         $announcements = $smtp->connect();
@@ -118,8 +112,6 @@ class SMTPTest extends TestCase
         $smtp = new SMTP(
             "localhost",
             587,
-            "user",
-            "password",
             socket: $socket
         );
         $smtp->doHandshake();
@@ -148,8 +140,6 @@ class SMTPTest extends TestCase
         $smtp = new SMTP(
             "localhost",
             587,
-            "user",
-            "password",
             socket: $socket
         );
         $smtp->doHandshake();
@@ -177,8 +167,6 @@ class SMTPTest extends TestCase
         $smtp = new SMTP(
             "localhost",
             587,
-            "user",
-            "password",
             socket: $socket
         );
 
@@ -215,8 +203,6 @@ class SMTPTest extends TestCase
         $smtp = new SMTP(
             "localhost",
             587,
-            "user",
-            "password",
             socket: $socket
         );
 
@@ -254,8 +240,6 @@ class SMTPTest extends TestCase
         $smtp = new SMTP(
             "localhost",
             587,
-            "user",
-            "password",
             socket: $socket
         );
 
@@ -295,8 +279,6 @@ class SMTPTest extends TestCase
         $smtp = new SMTP(
             "localhost",
             587,
-            "user",
-            "password",
             socket: $socket
         );
         
@@ -339,8 +321,6 @@ class SMTPTest extends TestCase
         $smtp = new SMTP(
             "localhost",
             465,
-            "user",
-            "password",
             socket: $socket
         );
         $smtp->connect();
