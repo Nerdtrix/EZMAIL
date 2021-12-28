@@ -49,19 +49,28 @@ class SMTP
         {
             $response = $this->socket->readString(self::BUFFER_SIZE);
             
-            if (strlen($response) < 4)
+            if (strlen($response) < 3)
             {
                 throw new Exception("Invalid server response length");
             }
 
             $code = (int)substr($response, 0, 3);
-            array_push($messages, substr($response, 4));
-
-            if ($response[3] == " ")
+            
+            if (strlen($response) == 3)
             {
-                // https://stackoverflow.com/a/7776454/5638260
-                // No more to read.
+                // Only code no message.
                 break;
+            }
+            else
+            {
+                array_push($messages, substr($response, 4));
+
+                if ($response[3] == " ")
+                {
+                    // https://stackoverflow.com/a/7776454/5638260
+                    // No more to read.
+                    break;
+                }
             }
         }
 
@@ -245,6 +254,37 @@ class SMTP
         }
     }
 
+    private function doPlainAuth(string $username, string $password) : void
+    {
+        // Sending AUTH PLAIN.
+        $this->write("AUTH PLAIN");
+
+        // Reading response.
+        $response = $this->read();
+
+        if ($response->code !== 334)
+        {
+            throw new Exception("Invalid AUTH PLAIN response: " . $response->code);
+        }
+
+        // Sending username and password.
+        $this->write(base64_encode(
+            sprintf("\0%s\0%s", $username, $password)
+        ));
+
+        // Reading response.
+        $response = $this->read();
+
+        if ($response->code === 535) // Maybe the whole 530 range?
+        {
+            throw new Exception("SMTP authentication failed");
+        }
+        else if ($response->code !== 235)
+        {
+            throw new Exception("Invalid SMTP authentication response: " . $response->code);
+        }
+    }
+
     public function doAuth(
         string $username,
         string $password,
@@ -254,6 +294,10 @@ class SMTP
         if ($authType == self::AUTH_TYPE_STANDARD)
         {
             $this->doStandardAuth($username, $password);
+        }
+        else if ($authType == self::AUTH_TYPE_PLAIN)
+        {
+            $this->doPlainAuth($username, $password);
         }
         else
         {

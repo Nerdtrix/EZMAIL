@@ -593,6 +593,149 @@ class SMTPTest extends TestCase
         }
     }
 
+    public function testDoAuthHandlePlain()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "334"); // AUTH PLAIN
+        array_push($socket->readStringResults, "235 Authentication successful"); // after username password
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+        $smtp->doAuth(
+            "user",
+            "password123",
+            SMTP::AUTH_TYPE_PLAIN
+        );
+
+        // Assert.
+        $this->assertFalse($socket->isClosed);
+        $this->assertEmpty($socket->readStringResults);
+
+        $this->assertEquals(2, count($socket->writeStringData));
+        $this->assertEquals("AUTH PLAIN" . SMTP::CRLF, $socket->writeStringData[0]);
+        $this->assertEquals(base64_encode("\0user\0password123") . SMTP::CRLF, $socket->writeStringData[1]);
+    }
+
+    public function testDoAuthHandlePlainInvalidAuthPlainResponseCode()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "420 what"); // AUTH PLAIN
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+
+        try
+        {
+            $smtp->doAuth(
+                "user",
+                "password123",
+                SMTP::AUTH_TYPE_PLAIN
+            );
+
+            // No error.
+            $this->fail();
+        }
+        catch (Exception $ex)
+        {
+            // Assert.
+            $this->assertFalse($socket->isClosed);
+            $this->assertEmpty($socket->readStringResults);
+
+            $this->assertEquals(1, count($socket->writeStringData));
+            $this->assertEquals("AUTH PLAIN" . SMTP::CRLF, $socket->writeStringData[0]);
+
+            $this->assertEquals("Invalid AUTH PLAIN response: 420", $ex->getMessage());
+        }
+    }
+
+    public function testDoAuthHandlePlainAuthenticationFailed()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "334"); // AUTH PLAIN
+        array_push($socket->readStringResults, "535 Authentication failed"); // after username password
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+
+        try
+        {
+            $smtp->doAuth(
+                "user",
+                "password123",
+                SMTP::AUTH_TYPE_PLAIN
+            );
+
+            // No error.
+            $this->fail();
+        }
+        catch (Exception $ex)
+        {
+            // Assert.
+            $this->assertFalse($socket->isClosed);
+            $this->assertEmpty($socket->readStringResults);
+
+            $this->assertEquals(2, count($socket->writeStringData));
+            $this->assertEquals("AUTH PLAIN" . SMTP::CRLF, $socket->writeStringData[0]);
+            $this->assertEquals(base64_encode("\0user\0password123") . SMTP::CRLF, $socket->writeStringData[1]);
+
+            $this->assertEquals("SMTP authentication failed", $ex->getMessage());
+        }
+    }
+
+    public function testDoAuthHandlePlainInvalidAuthenticationResponse()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "334"); // AUTH PLAIN
+        array_push($socket->readStringResults, "420 what"); // after username password
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+
+        try
+        {
+            $smtp->doAuth(
+                "user",
+                "password123",
+                SMTP::AUTH_TYPE_PLAIN
+            );
+
+            // No error.
+            $this->fail();
+        }
+        catch (Exception $ex)
+        {
+            // Assert.
+            $this->assertFalse($socket->isClosed);
+            $this->assertEmpty($socket->readStringResults);
+
+            $this->assertEquals(2, count($socket->writeStringData));
+            $this->assertEquals("AUTH PLAIN" . SMTP::CRLF, $socket->writeStringData[0]);
+            $this->assertEquals(base64_encode("\0user\0password123") . SMTP::CRLF, $socket->writeStringData[1]);
+
+            $this->assertEquals("Invalid SMTP authentication response: 420", $ex->getMessage());
+        }
+    }
+
     public function testDoAuthHandleUnsupportedType()
     {
         // Fake socket.
