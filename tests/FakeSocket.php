@@ -15,6 +15,7 @@ class FakeSocket implements ISocket
     public array $readStringLengths = [];
     public array $readStringResults = [];
     public array $writeStringData = [];
+    public ?Exception $writeStringError = null;
 
     public function open(string $host, int $port, float $timeout) : void
     {
@@ -44,6 +45,11 @@ class FakeSocket implements ISocket
 
     public function writeString(string $data) : void
     {
+        if ($this->writeStringError !== null)
+        {
+            throw $this->writeStringError;
+        }
+
         array_push($this->writeStringData, $data);
     }
 

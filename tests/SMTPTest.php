@@ -878,6 +878,55 @@ class SMTPTest extends TestCase
             $this->assertEquals("Invalid auth type: 100", $ex->getMessage());
         }
     }
+
+    public function testQuit()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+        $smtp->quit();
+
+        // Assert.
+        $this->assertTrue($socket->isClosed);
+
+        $this->assertEquals(1, count($socket->writeStringData));
+        $this->assertEquals("QUIT" . SMTP::CRLF, $socket->writeStringData[0]);
+    }
+
+    public function testQuitIgnoreError()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        $socket->writeStringError = new Exception("error");
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+        
+        try
+        {
+            $smtp->quit();
+
+            // No error.
+            $this->fail();
+        }
+        catch (Exception $ex)
+        {
+            // Assert.
+            $this->assertTrue($socket->isClosed);
+            $this->assertEmpty($socket->writeStringData);
+            $this->assertEquals("error", $ex->getMessage());
+        }
+    }
 }
 
 ?>

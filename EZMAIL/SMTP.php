@@ -335,6 +335,20 @@ class SMTP
             throw new InvalidArgumentException("Invalid auth type: " . $authType);
         }
     }
+
+    public function quit() : void
+    {
+        try
+        {
+            // Sending QUIT.
+            $this->write("QUIT");
+        }
+        finally
+        {
+            // Closing socket.
+            $this->socket->close();
+        }
+    }
 }
 
 ?>
