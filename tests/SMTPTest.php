@@ -879,6 +879,265 @@ class SMTPTest extends TestCase
         }
     }
 
+    public function testStartSendMail()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "250 2.1.0 Sender OK"); // MAIL FROM
+        array_push($socket->readStringResults, "250 2.1.5 Recipient OK"); // RCPT TO
+        array_push($socket->readStringResults, "250 2.1.5 Recipient OK"); // RCPT TO
+        array_push($socket->readStringResults, "354 Start mail input; end with <CRLF>.CRLF>"); // DATA
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+        $smtp->startSendMail(
+            "sender@mail.com",
+            array(
+                "Receiver 1" => "recv1@mail.com",
+                "Receiver 2" => "recv2@mail.com"
+            )
+        );
+
+        // Assert.
+        $this->assertFalse($socket->isClosed);
+        $this->assertEmpty($socket->readStringResults);
+
+        $this->assertEquals(4, count($socket->writeStringData));
+        $this->assertEquals("MAIL FROM:<sender@mail.com>" . PHP_CRLF, $socket->writeStringData[0]);
+        $this->assertEquals("RCPT TO:<recv1@mail.com>" . PHP_CRLF, $socket->writeStringData[1]);
+        $this->assertEquals("RCPT TO:<recv2@mail.com>" . PHP_CRLF, $socket->writeStringData[2]);
+        $this->assertEquals("DATA" . PHP_CRLF, $socket->writeStringData[3]);
+    }
+
+    public function testStartSendMailHandleSenderNotOK()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "420 what"); // MAIL FROM
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+
+        try
+        {
+            $smtp->startSendMail(
+                "sender@mail.com",
+                array("Receiver 1" => "recv1@mail.com")
+            );
+
+            // No error.
+            $this->fail();
+        }
+        catch (Exception $ex)
+        {
+            // Assert.
+            $this->assertFalse($socket->isClosed);
+            $this->assertEmpty($socket->readStringResults);
+
+            $this->assertEquals(1, count($socket->writeStringData));
+            $this->assertEquals("MAIL FROM:<sender@mail.com>" . PHP_CRLF, $socket->writeStringData[0]);
+
+            $this->assertEquals("Invalid MAIL FROM response: 420", $ex->getMessage());
+        }
+    }
+
+    public function testStartSendMailHandleRecipientNotOK()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "250 2.1.0 Sender OK"); // MAIL FROM
+        array_push($socket->readStringResults, "420 what"); // RCPT TO
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+
+        try
+        {
+            $smtp->startSendMail(
+                "sender@mail.com",
+                array("Receiver 1" => "recv1@mail.com")
+            );
+
+            // No error.
+            $this->fail();
+        }
+        catch (Exception $ex)
+        {
+            // Assert.
+            $this->assertFalse($socket->isClosed);
+            $this->assertEmpty($socket->readStringResults);
+
+            $this->assertEquals(2, count($socket->writeStringData));
+            $this->assertEquals("MAIL FROM:<sender@mail.com>" . PHP_CRLF, $socket->writeStringData[0]);
+            $this->assertEquals("RCPT TO:<recv1@mail.com>" . PHP_CRLF, $socket->writeStringData[1]);
+
+            $this->assertEquals("Invalid RCPT TO response: 420", $ex->getMessage());
+        }
+    }
+
+    public function testStartSendMailHandleDataError()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "250 2.1.0 Sender OK"); // MAIL FROM
+        array_push($socket->readStringResults, "250 2.1.5 Recipient OK"); // RCPT TO
+        array_push($socket->readStringResults, "420 what"); // DATA
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+
+        try
+        {
+            $smtp->startSendMail(
+                "sender@mail.com",
+                array("Receiver 1" => "recv1@mail.com")
+            );
+
+            // No error.
+            $this->fail();
+        }
+        catch (Exception $ex)
+        {
+            // Assert.
+            $this->assertFalse($socket->isClosed);
+            $this->assertEmpty($socket->readStringResults);
+
+            $this->assertEquals(3, count($socket->writeStringData));
+            $this->assertEquals("MAIL FROM:<sender@mail.com>" . PHP_CRLF, $socket->writeStringData[0]);
+            $this->assertEquals("RCPT TO:<recv1@mail.com>" . PHP_CRLF, $socket->writeStringData[1]);
+            $this->assertEquals("DATA" . PHP_CRLF, $socket->writeStringData[2]);
+
+            $this->assertEquals("Invalid DATA response: 420", $ex->getMessage());
+        }
+    }
+
+    public function testWriteMailData()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+        $smtp->writeMailData("MIME-Version: 1.0");
+        $smtp->writeMailData("Message-ID: 123");
+
+        // Assert.
+        $this->assertFalse($socket->isClosed);
+        $this->assertEquals(2, count($socket->writeStringData));
+        $this->assertEquals("MIME-Version: 1.0" . PHP_CRLF, $socket->writeStringData[0]);
+        $this->assertEquals("Message-ID: 123" . PHP_CRLF, $socket->writeStringData[1]);
+    }
+
+    public function testEndSendMail()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "250 2.0.0 OK <111@host.com>"); // .
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+        $mailId = $smtp->endSendMail();
+
+        // Assert.
+        $this->assertFalse($socket->isClosed);
+        $this->assertEmpty($socket->readStringResults);
+
+        $this->assertEquals(1, count($socket->writeStringData));
+        $this->assertEquals("." . PHP_CRLF, $socket->writeStringData[0]);
+
+        $this->assertEquals("111@host.com", $mailId);
+    }
+
+    public function testEndSendMailHandleError()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "420 what"); // DATA
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+
+        try
+        {
+            $smtp->endSendMail();
+
+            // No error.
+            $this->fail();
+        }
+        catch (Exception $ex)
+        {
+            // Assert.
+            $this->assertFalse($socket->isClosed);
+            $this->assertEmpty($socket->readStringResults);
+
+            $this->assertEquals(1, count($socket->writeStringData));
+            $this->assertEquals("." . PHP_CRLF, $socket->writeStringData[0]);
+
+            $this->assertEquals("Invalid DATA end response: 420", $ex->getMessage());
+        }
+    }
+
+    public function testEndSendMailHandleInvalidResponseLength()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "250 what"); // DATA
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+
+        try
+        {
+            $smtp->endSendMail();
+
+            // No error.
+            $this->fail();
+        }
+        catch (Exception $ex)
+        {
+            // Assert.
+            $this->assertFalse($socket->isClosed);
+            $this->assertEmpty($socket->readStringResults);
+
+            $this->assertEquals(1, count($socket->writeStringData));
+            $this->assertEquals("." . PHP_CRLF, $socket->writeStringData[0]);
+
+            $this->assertEquals("Invalid DATA response: what", $ex->getMessage());
+        }
+    }
+
     public function testQuit()
     {
         // Fake socket.

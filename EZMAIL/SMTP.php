@@ -338,6 +338,82 @@ class SMTP
         }
     }
 
+    public function startSendMail(
+        string $from,
+        array $to
+    ) : void
+    {
+        // Sending MAIL FROM.
+        $this->write(
+            sprintf("MAIL FROM:<%s>", $from)
+        );
+
+        // Reading response.
+        $response = $this->read();
+
+        if ($response->code !== 250)
+        {
+            throw new Exception("Invalid MAIL FROM response: " . $response->code);
+        }
+
+        // Sending receipents.
+        foreach ($to as $name => $address)
+        {
+            // Sending RCPT TO.
+            $this->write(
+                sprintf("RCPT TO:<%s>", $address)
+            );
+
+            // Reading response.
+            $response = $this->read();
+
+            if ($response->code !== 250)
+            {
+                throw new Exception("Invalid RCPT TO response: " . $response->code);
+            }
+        }
+
+        // Sending DATA.
+        $this->write("DATA");
+
+        // Reading response.
+        $response = $this->read();
+
+        if ($response->code !== 354)
+        {
+            throw new Exception("Invalid DATA response: " . $response->code);
+        }
+    }
+
+    public function writeMailData(string $data) : void
+    {
+        $this->write($data);
+    }
+
+    public function endSendMail() : string
+    {
+        // Sending .
+        $this->write(".");
+
+        // Reading response.
+        $response = $this->read();
+
+        if ($response->code !== 250)
+        {
+            throw new Exception("Invalid DATA end response: " . $response->code);
+        }
+
+        $responseSplit = explode(" ", $response->messages[0]);
+
+        if (count($responseSplit) < 3)
+        {
+            throw new Exception("Invalid DATA response: " . $response->messages[0]);
+        }
+
+        $result = $responseSplit[2];
+        return trim($result, "<>");
+    }
+
     public function quit() : void
     {
         try
