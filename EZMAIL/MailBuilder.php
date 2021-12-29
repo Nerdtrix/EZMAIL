@@ -4,47 +4,14 @@ namespace EZMAIL;
 
 class MailBuilder
 {
-    private string $id;
-    private string $subject;
-    private string $message;
-    private array $from;
-    private array $to;
-    private array $cc;
-    private array $bcc;
-    private array $attachments;
-    private string $bounceAddress;
-    private string $replyTo;
-    private string $appName;
     private IMailBuilderWriter $writer;
     private IFileReader $fileReader;
 
     public function __construct(
-        string $id,
-        string $subject,
-        string $message,
-        array $from,
-        array $to,
-        array $cc,
-        array $bcc,
-        array $attachments,
-        string $bounceAddress,
-        string $replyTo,
-        string $appName,
         IMailBuilderWriter $writer,
         ?IFileReader $fileReader = null
     )
     {
-        $this->id = $id;
-        $this->subject = $subject;
-        $this->message = $message;
-        $this->from = $from;
-        $this->to = $to;
-        $this->cc = $cc;
-        $this->bcc = $bcc;
-        $this->attachments = $attachments;
-        $this->bounceAddress = $bounceAddress;
-        $this->replyTo = $replyTo;
-        $this->appName = $appName;
         $this->writer = $writer;
         
         if ($fileReader == null)
@@ -69,55 +36,66 @@ class MailBuilder
         return substr($result, 0, strlen($result) - 1);
     }
 
-    private function getBoundary() : string
+    private function getBoundary(string $id) : string
     {
-        return "boundary" . $this->id;
+        return "boundary" . $id;
     }
 
-    private function buildHeader() : void
+    private function buildHeader(
+        string $id,
+        string $subject,
+        array $from,
+        array $to,
+        array $cc,
+        array $bcc,
+        array $attachments,
+        string $bounceAddress,
+        string $replyTo,
+        string $appName,
+    ) : void
     {
         $this->writer->writeHeader("MIME-Version: 1.0");
-        $this->writer->writeHeader("X-Mailer: " . $this->appName);
+        $this->writer->writeHeader("X-Mailer: " . $appName);
         $this->writer->writeHeader("Date: " . date("r"));
         $this->writer->writeHeader("Priority: 3");
         $this->writer->writeHeader(
             sprintf(
                 "Subject: =?utf-8?B?%s?=",
-                base64_encode($this->subject)
+                base64_encode($subject)
             )
         );
-        $this->writer->writeHeader("Return-Path: " . $this->bounceAddress);
+        $this->writer->writeHeader("Return-Path: " . $bounceAddress);
         $this->writer->writeHeader(
             sprintf(
                 "From: %s <%s>",
-                key($this->from),
-                end($this->from)
+                key($from),
+                end($from)
             )
         );
-        $this->writer->writeHeader("Message-ID: " . $this->id);
-        $this->writer->writeHeader("To: " . $this->generateMimeAddresses($this->to));
+        $this->writer->writeHeader("Message-ID: " . $id);
+        $this->writer->writeHeader("To: " . $this->generateMimeAddresses($to));
         
-        if (!empty($this->cc))
+        if (!empty($cc))
         {
-            $this->writer->writeHeader("Cc: " . $this->generateMimeAddresses($this->cc));
+            $this->writer->writeHeader("Cc: " . $this->generateMimeAddresses($cc));
         }
 
         
-        if (!empty($this->bcc))
+        if (!empty($bcc))
         {
-            $this->writer->writeHeader("Bcc: " . $this->generateMimeAddresses($this->bcc));
+            $this->writer->writeHeader("Bcc: " . $this->generateMimeAddresses($bcc));
         }
 
-        $this->writer->writeHeader("Reply-To: " . $this->replyTo);
+        $this->writer->writeHeader("Reply-To: " . $replyTo);
         $contentType = "multipart/alternative";
 
-        if (!empty($this->attachments))
+        if (!empty($attachments))
         {
             $contentType = "multipart/mixed";
         }
 
         $this->writer->writeHeader(
-            sprintf("Content-Type: %s; boundary=\"%s\"", $contentType, $this->getBoundary())
+            sprintf("Content-Type: %s; boundary=\"%s\"", $contentType, $this->getBoundary($id))
         );
         $this->writer->writeHeader("");
     }
@@ -129,24 +107,30 @@ class MailBuilder
         return explode(" ", $enc);
     }
 
-    private function buildContent() : void
+    private function buildContent(
+        string $id,
+        string $message
+    ) : void
     {
-        $this->writer->writeBody("--" . $this->getBoundary());
+        $this->writer->writeBody("--" . $this->getBoundary($id));
         $this->writer->writeBody("Content-Type: text/html; charset=\"UTF-8\"");
         $this->writer->writeBody("Content-Transfer-Encoding: base64");
         $this->writer->writeBody("");
 
-        foreach ($this->encodeContent($this->message) as $line)
+        foreach ($this->encodeContent($message) as $line)
         {
             $this->writer->writeBody($line);
         }
     }
 
-    private function buildAttachments() : void
+    private function buildAttachments(
+        string $id,
+        array $attachments
+    ) : void
     {
-        foreach ($this->attachments as $name => $path)
+        foreach ($attachments as $name => $path)
         {
-            $this->writer->writeBody("--" . $this->getBoundary());
+            $this->writer->writeBody("--" . $this->getBoundary($id));
             $this->writer->writeBody(
                 sprintf("Content-Type: application/octet-stream; name=\"%s\"", $name)
             );
@@ -163,17 +147,46 @@ class MailBuilder
         }
     }
 
-    private function buildEndBoundary() : void
+    private function buildEndBoundary(string $id) : void
     {
-        $this->writer->writeBody("--" . $this->getBoundary() . "--");
+        $this->writer->writeBody("--" . $this->getBoundary($id) . "--");
     }
 
-    public function build() : void
+    public function build(
+        string $id,
+        string $subject,
+        string $message,
+        array $from,
+        array $to,
+        array $cc,
+        array $bcc,
+        array $attachments,
+        string $bounceAddress,
+        string $replyTo,
+        string $appName,
+    ) : void
     {
-        $this->buildHeader();
-        $this->buildContent();
-        $this->buildAttachments();
-        $this->buildEndBoundary();
+        $this->buildHeader(
+            $id,
+            $subject,
+            $from,
+            $to,
+            $cc,
+            $bcc,
+            $attachments,
+            $bounceAddress,
+            $replyTo,
+            $appName
+        );
+        $this->buildContent(
+            $id,
+            $message
+        );
+        $this->buildAttachments(
+            $id,
+            $attachments
+        );
+        $this->buildEndBoundary($id);
     }
 }
 

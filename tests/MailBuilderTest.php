@@ -43,6 +43,10 @@ class MailBuilderTest extends TestCase
             "another line of the message\r\n" .
             "another line of the message\r\n";
         $builder = new MailBuilder(
+            writer: $writer,
+            fileReader: $fileReader
+        );
+        $builder->build(
             id: "111",
             subject: "this is subject",
             message: $message,
@@ -65,11 +69,8 @@ class MailBuilderTest extends TestCase
             ),
             bounceAddress: "bounce@mail.com",
             replyTo: "reply@mail.com",
-            appName: "Test App",
-            writer: $writer,
-            fileReader: $fileReader
+            appName: "Test App"
         );
-        $builder->build();
         
         // Assert header.
         $this->assertEquals("MIME-Version: 1.0", $writer->readHeader());
@@ -132,6 +133,10 @@ class MailBuilderTest extends TestCase
         
         // Test.
         $builder = new MailBuilder(
+            writer: $writer,
+            fileReader: new FakeFileReader
+        );
+        $builder->build(
             id: "111",
             subject: "this is subject",
             message: "this is message",
@@ -151,11 +156,8 @@ class MailBuilderTest extends TestCase
             attachments: [],
             bounceAddress: "bounce@mail.com",
             replyTo: "reply@mail.com",
-            appName: "Test App",
-            writer: $writer,
-            fileReader: new FakeFileReader
+            appName: "Test App"
         );
-        $builder->build();
 
         // Assert header.
         $this->assertEquals("MIME-Version: 1.0", $writer->readHeader());
@@ -191,6 +193,10 @@ class MailBuilderTest extends TestCase
         
         // Test.
         $builder = new MailBuilder(
+            writer: $writer,
+            fileReader: new FakeFileReader
+        );
+        $builder->build(
             id: "111",
             subject: "this is subject",
             message: "this is message",
@@ -207,11 +213,8 @@ class MailBuilderTest extends TestCase
             attachments: [],
             bounceAddress: "bounce@mail.com",
             replyTo: "reply@mail.com",
-            appName: "Test App",
-            writer: $writer,
-            fileReader: new FakeFileReader
+            appName: "Test App"
         );
-        $builder->build();
 
         // Assert header.
         $this->assertEquals("MIME-Version: 1.0", $writer->readHeader());
@@ -246,6 +249,10 @@ class MailBuilderTest extends TestCase
         
         // Test.
         $builder = new MailBuilder(
+            writer: $writer,
+            fileReader: new FakeFileReader
+        );
+        $builder->build(
             id: "111",
             subject: "this is subject",
             message: "this is message",
@@ -256,11 +263,8 @@ class MailBuilderTest extends TestCase
             attachments: [],
             bounceAddress: "bounce@mail.com",
             replyTo: "reply@mail.com",
-            appName: "Test App",
-            writer: $writer,
-            fileReader: new FakeFileReader
+            appName: "Test App"
         );
-        $builder->build();
 
         // Assert header.
         $this->assertEquals("MIME-Version: 1.0", $writer->readHeader());
