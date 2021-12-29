@@ -2,18 +2,14 @@
 
 namespace EZMAIL;
 
-class MailBuilder
+class MailBuilder implements IMailBuilder
 {
-    private IMailBuilderWriter $writer;
     private IFileReader $fileReader;
 
     public function __construct(
-        IMailBuilderWriter $writer,
         ?IFileReader $fileReader = null
     )
     {
-        $this->writer = $writer;
-        
         if ($fileReader == null)
         {
             $this->fileReader = new FileReader;
@@ -52,41 +48,42 @@ class MailBuilder
         string $bounceAddress,
         string $replyTo,
         string $appName,
+        IMailBuilderWriter $writer
     ) : void
     {
-        $this->writer->writeHeader("MIME-Version: 1.0");
-        $this->writer->writeHeader("X-Mailer: " . $appName);
-        $this->writer->writeHeader("Date: " . date("r"));
-        $this->writer->writeHeader("Priority: 3");
-        $this->writer->writeHeader(
+        $writer->writeHeader("MIME-Version: 1.0");
+        $writer->writeHeader("X-Mailer: " . $appName);
+        $writer->writeHeader("Date: " . date("r"));
+        $writer->writeHeader("Priority: 3");
+        $writer->writeHeader(
             sprintf(
                 "Subject: =?utf-8?B?%s?=",
                 base64_encode($subject)
             )
         );
-        $this->writer->writeHeader("Return-Path: " . $bounceAddress);
-        $this->writer->writeHeader(
+        $writer->writeHeader("Return-Path: " . $bounceAddress);
+        $writer->writeHeader(
             sprintf(
                 "From: %s <%s>",
                 key($from),
                 end($from)
             )
         );
-        $this->writer->writeHeader("Message-ID: " . $id);
-        $this->writer->writeHeader("To: " . $this->generateMimeAddresses($to));
+        $writer->writeHeader("Message-ID: " . $id);
+        $writer->writeHeader("To: " . $this->generateMimeAddresses($to));
         
         if (!empty($cc))
         {
-            $this->writer->writeHeader("Cc: " . $this->generateMimeAddresses($cc));
+            $writer->writeHeader("Cc: " . $this->generateMimeAddresses($cc));
         }
 
         
         if (!empty($bcc))
         {
-            $this->writer->writeHeader("Bcc: " . $this->generateMimeAddresses($bcc));
+            $writer->writeHeader("Bcc: " . $this->generateMimeAddresses($bcc));
         }
 
-        $this->writer->writeHeader("Reply-To: " . $replyTo);
+        $writer->writeHeader("Reply-To: " . $replyTo);
         $contentType = "multipart/alternative";
 
         if (!empty($attachments))
@@ -94,10 +91,10 @@ class MailBuilder
             $contentType = "multipart/mixed";
         }
 
-        $this->writer->writeHeader(
+        $writer->writeHeader(
             sprintf("Content-Type: %s; boundary=\"%s\"", $contentType, $this->getBoundary($id))
         );
-        $this->writer->writeHeader("");
+        $writer->writeHeader("");
     }
 
     private function encodeContent(string $content) : array
@@ -109,47 +106,52 @@ class MailBuilder
 
     private function buildContent(
         string $id,
-        string $message
+        string $message,
+        IMailBuilderWriter $writer
     ) : void
     {
-        $this->writer->writeBody("--" . $this->getBoundary($id));
-        $this->writer->writeBody("Content-Type: text/html; charset=\"UTF-8\"");
-        $this->writer->writeBody("Content-Transfer-Encoding: base64");
-        $this->writer->writeBody("");
+        $writer->writeBody("--" . $this->getBoundary($id));
+        $writer->writeBody("Content-Type: text/html; charset=\"UTF-8\"");
+        $writer->writeBody("Content-Transfer-Encoding: base64");
+        $writer->writeBody("");
 
         foreach ($this->encodeContent($message) as $line)
         {
-            $this->writer->writeBody($line);
+            $writer->writeBody($line);
         }
     }
 
     private function buildAttachments(
         string $id,
-        array $attachments
+        array $attachments,
+        IMailBuilderWriter $writer
     ) : void
     {
         foreach ($attachments as $name => $path)
         {
-            $this->writer->writeBody("--" . $this->getBoundary($id));
-            $this->writer->writeBody(
+            $writer->writeBody("--" . $this->getBoundary($id));
+            $writer->writeBody(
                 sprintf("Content-Type: application/octet-stream; name=\"%s\"", $name)
             );
-            $this->writer->writeBody("Content-Transfer-Encoding: base64");
-            $this->writer->writeBody(
+            $writer->writeBody("Content-Transfer-Encoding: base64");
+            $writer->writeBody(
                 sprintf("Content-Disposition: attachment; filename=\"%s\"", $name)
             );
-            $this->writer->writeBody("");
+            $writer->writeBody("");
             
             foreach ($this->encodeContent($this->fileReader->read($path)) as $line)
             {
-                $this->writer->writeBody($line);
+                $writer->writeBody($line);
             }
         }
     }
 
-    private function buildEndBoundary(string $id) : void
+    private function buildEndBoundary(
+        string $id,
+        IMailBuilderWriter $writer
+    ) : void
     {
-        $this->writer->writeBody("--" . $this->getBoundary($id) . "--");
+        $writer->writeBody("--" . $this->getBoundary($id) . "--");
     }
 
     public function build(
@@ -164,6 +166,7 @@ class MailBuilder
         string $bounceAddress,
         string $replyTo,
         string $appName,
+        IMailBuilderWriter $writer
     ) : void
     {
         $this->buildHeader(
@@ -176,17 +179,23 @@ class MailBuilder
             $attachments,
             $bounceAddress,
             $replyTo,
-            $appName
+            $appName,
+            $writer
         );
         $this->buildContent(
             $id,
-            $message
+            $message,
+            $writer
         );
         $this->buildAttachments(
             $id,
-            $attachments
+            $attachments,
+            $writer
         );
-        $this->buildEndBoundary($id);
+        $this->buildEndBoundary(
+            $id,
+            $writer
+        );
     }
 }
 

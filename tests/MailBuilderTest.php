@@ -42,10 +42,7 @@ class MailBuilderTest extends TestCase
             "another line of the message\r\n" .
             "another line of the message\r\n" .
             "another line of the message\r\n";
-        $builder = new MailBuilder(
-            writer: $writer,
-            fileReader: $fileReader
-        );
+        $builder = new MailBuilder($fileReader);
         $builder->build(
             id: "111",
             subject: "this is subject",
@@ -69,7 +66,8 @@ class MailBuilderTest extends TestCase
             ),
             bounceAddress: "bounce@mail.com",
             replyTo: "reply@mail.com",
-            appName: "Test App"
+            appName: "Test App",
+            writer: $writer
         );
         
         // Assert header.
@@ -132,10 +130,7 @@ class MailBuilderTest extends TestCase
         $writer = new FakeMailBuilderWriter;
         
         // Test.
-        $builder = new MailBuilder(
-            writer: $writer,
-            fileReader: new FakeFileReader
-        );
+        $builder = new MailBuilder(new FakeFileReader);
         $builder->build(
             id: "111",
             subject: "this is subject",
@@ -156,7 +151,8 @@ class MailBuilderTest extends TestCase
             attachments: [],
             bounceAddress: "bounce@mail.com",
             replyTo: "reply@mail.com",
-            appName: "Test App"
+            appName: "Test App",
+            writer: $writer
         );
 
         // Assert header.
@@ -192,10 +188,7 @@ class MailBuilderTest extends TestCase
         $writer = new FakeMailBuilderWriter;
         
         // Test.
-        $builder = new MailBuilder(
-            writer: $writer,
-            fileReader: new FakeFileReader
-        );
+        $builder = new MailBuilder(new FakeFileReader);
         $builder->build(
             id: "111",
             subject: "this is subject",
@@ -213,7 +206,8 @@ class MailBuilderTest extends TestCase
             attachments: [],
             bounceAddress: "bounce@mail.com",
             replyTo: "reply@mail.com",
-            appName: "Test App"
+            appName: "Test App",
+            writer: $writer
         );
 
         // Assert header.
@@ -248,10 +242,7 @@ class MailBuilderTest extends TestCase
         $writer = new FakeMailBuilderWriter;
         
         // Test.
-        $builder = new MailBuilder(
-            writer: $writer,
-            fileReader: new FakeFileReader
-        );
+        $builder = new MailBuilder(new FakeFileReader);
         $builder->build(
             id: "111",
             subject: "this is subject",
@@ -263,7 +254,8 @@ class MailBuilderTest extends TestCase
             attachments: [],
             bounceAddress: "bounce@mail.com",
             replyTo: "reply@mail.com",
-            appName: "Test App"
+            appName: "Test App",
+            writer: $writer
         );
 
         // Assert header.
