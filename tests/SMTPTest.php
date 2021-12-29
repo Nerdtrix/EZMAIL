@@ -12,9 +12,6 @@ class SMTPTest extends TestCase
     {
         // Fake socket.
         $socket = new FakeSocket;
-        array_push($socket->readStringResults, "220-server");
-        array_push($socket->readStringResults, "220-is");
-        array_push($socket->readStringResults, "220 ready");
         
         // Test.
         $smtp = new SMTP(
@@ -22,7 +19,7 @@ class SMTPTest extends TestCase
             587,
             socket: $socket
         );
-        $announcements = $smtp->connect();
+        $smtp->connect();
 
         // Assert.
         $this->assertFalse($socket->isClosed);
@@ -31,54 +28,12 @@ class SMTPTest extends TestCase
         $this->assertEquals(30, $socket->openTimeout);
         $this->assertEmpty($socket->readStringResults);
         $this->assertEmpty($socket->writeStringData);
-
-        $this->assertEquals(3, count($announcements));
-        $this->assertEquals("server", $announcements[0]);
-        $this->assertEquals("is", $announcements[1]);
-        $this->assertEquals("ready", $announcements[2]);
-    }
-
-    public function testConnectWithout220Response()
-    {
-        // Fake socket.
-        $socket = new FakeSocket;
-        array_push($socket->readStringResults, "420 server not ready");
-
-        // Test.
-        $smtp = new SMTP(
-            "localhost",
-            587,
-            socket: $socket
-        );
-        
-        try
-        {
-            $smtp->connect();
-
-            // No error.
-            $this->fail();
-        }
-        catch (Exception $ex)
-        {
-            // Assert.
-            $this->assertFalse($socket->isClosed);
-            $this->assertEquals("localhost", $socket->openHost);
-            $this->assertEquals(587, $socket->openPort);
-            $this->assertEquals(30, $socket->openTimeout);
-            $this->assertEmpty($socket->readStringResults);
-            $this->assertEmpty($socket->writeStringData);
-            $this->assertEquals(
-                "Invalid announcement response: 420",
-                $ex->getMessage()
-            );
-        }
     }
 
     public function testConnectOnPort465()
     {
         // Fake socket.
         $socket = new FakeSocket;
-        array_push($socket->readStringResults, "220 server ready");
 
         // Test.
         $smtp = new SMTP(
@@ -86,7 +41,7 @@ class SMTPTest extends TestCase
             465,
             socket: $socket
         );
-        $announcements = $smtp->connect();
+        $smtp->connect();
 
         // Assert.
         $this->assertFalse($socket->isClosed);
@@ -95,15 +50,15 @@ class SMTPTest extends TestCase
         $this->assertEquals(30, $socket->openTimeout);
         $this->assertEmpty($socket->readStringResults);
         $this->assertEmpty($socket->writeStringData);
-
-        $this->assertEquals(1, count($announcements));
-        $this->assertEquals("server ready", $announcements[0]);
     }
 
     public function testDoHandshake()
     {
         // Fake socket.
         $socket = new FakeSocket;
+        array_push($socket->readStringResults, "220-server");
+        array_push($socket->readStringResults, "220-is");
+        array_push($socket->readStringResults, "220 ready");
         array_push($socket->readStringResults, "250 mailserver"); // EHLO
         array_push($socket->readStringResults, "220 server ready"); // STARTTLS
         array_push($socket->readStringResults, "250 mailserver"); // EHLO
@@ -125,12 +80,50 @@ class SMTPTest extends TestCase
         $this->assertEquals("EHLO localhost" . PHP_CRLF, $socket->writeStringData[0]);
         $this->assertEquals("STARTTLS" . PHP_CRLF, $socket->writeStringData[1]);
         $this->assertEquals("EHLO localhost" . PHP_CRLF, $socket->writeStringData[2]);
+
+        $this->assertEquals(3, count($smtp->announcements));
+        $this->assertEquals("server", $smtp->announcements[0]);
+        $this->assertEquals("is", $smtp->announcements[1]);
+        $this->assertEquals("ready", $smtp->announcements[2]);
+    }
+
+    public function testDoHandshakeWithAnnouncementError()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "421 what");
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+
+        try
+        {
+            $smtp->doHandshake();
+
+            // No error.
+            $this->fail();
+        }
+        catch (Exception $ex)
+        {
+            // Assert.
+            $this->assertFalse($socket->isClosed);
+            $this->assertFalse($socket->isCryptoEnabled);
+            $this->assertEmpty($socket->readStringResults);
+            $this->assertEmpty($socket->writeStringData);
+
+            $this->assertEquals("Invalid announcement response: 421", $ex->getMessage());
+        }
     }
 
     public function testDoHandshakeWithHELO()
     {
         // Fake socket.
         $socket = new FakeSocket;
+        array_push($socket->readStringResults, "220 server is ready");
         array_push($socket->readStringResults, "420 whatsthat"); // EHLO
         array_push($socket->readStringResults, "250 mailserver"); // HELO
         array_push($socket->readStringResults, "220 server ready"); // STARTTLS
@@ -154,12 +147,16 @@ class SMTPTest extends TestCase
         $this->assertEquals("HELO localhost" . PHP_CRLF, $socket->writeStringData[1]);
         $this->assertEquals("STARTTLS" . PHP_CRLF, $socket->writeStringData[2]);
         $this->assertEquals("HELO localhost" . PHP_CRLF, $socket->writeStringData[3]);
+
+        $this->assertEquals(1, count($smtp->announcements));
+        $this->assertEquals("server is ready", $smtp->announcements[0]);
     }
 
     public function testDoHandshakeHandleHELOError()
     {
         // Fake socket.
         $socket = new FakeSocket;
+        array_push($socket->readStringResults, "220 server is ready");
         array_push($socket->readStringResults, "420 whatsthat"); // EHLO
         array_push($socket->readStringResults, "421 whatsthat"); // HELO
 
@@ -196,6 +193,7 @@ class SMTPTest extends TestCase
     {
         // Fake socket.
         $socket = new FakeSocket;
+        array_push($socket->readStringResults, "220 server is ready");
         array_push($socket->readStringResults, "250 mailserver"); // EHLO
         array_push($socket->readStringResults, "420 what"); // STARTTLS
         
@@ -232,6 +230,7 @@ class SMTPTest extends TestCase
     {
         // Fake socket.
         $socket = new FakeSocket;
+        array_push($socket->readStringResults, "220 server is ready");
         array_push($socket->readStringResults, "250 mailserver"); // EHLO
         array_push($socket->readStringResults, "220 server ready"); // STARTTLS
         array_push($socket->readStringResults, "420 what"); // EHLO
@@ -270,6 +269,7 @@ class SMTPTest extends TestCase
     {
         // Fake socket.
         $socket = new FakeSocket;
+        array_push($socket->readStringResults, "220 server is ready");
         array_push($socket->readStringResults, "420 whatsthat"); // EHLO
         array_push($socket->readStringResults, "250 mailserver"); // HELO
         array_push($socket->readStringResults, "220 server ready"); // STARTTLS
@@ -310,11 +310,7 @@ class SMTPTest extends TestCase
     {
         // Fake socket.
         $socket = new FakeSocket;
-
-        // connect
         array_push($socket->readStringResults, "220 server ready");
-
-        // doHandshake
         array_push($socket->readStringResults, "250 mailserver"); // EHLO
 
         // Test.
@@ -324,7 +320,6 @@ class SMTPTest extends TestCase
             socket: $socket
         );
         $smtp->connect();
-        $socket->writeStringData = [];
         $smtp->doHandshake();
 
         // Assert.

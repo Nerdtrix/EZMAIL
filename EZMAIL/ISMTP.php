@@ -4,7 +4,7 @@ namespace EZMAIL;
 
 interface ISMTP
 {
-    public function connect() : array;
+    public function connect() : void;
     public function doHandshake() : void;
     public function doAuth(
         string $username,

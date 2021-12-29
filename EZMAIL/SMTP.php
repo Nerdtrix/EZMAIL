@@ -13,6 +13,8 @@ class SMTP implements ISMTP
     const AUTH_TYPE_PLAIN = 2;
     const AUTH_TYPE_2AUTH = 3;
 
+    public array $announcements = [];
+
     private bool $isSSL;
     private string $hostName;
     private string $portNumber;
@@ -88,7 +90,7 @@ class SMTP implements ISMTP
         $this->socket->writeString($command . PHP_CRLF);
     }
 
-    public function connect() : array
+    public function connect() : void
     {
         $this->isSSL = strpos($this->hostName, "ssl://") !== false;
 
@@ -104,16 +106,6 @@ class SMTP implements ISMTP
             $this->portNumber,
             $this->timeout
         );
-
-        // Reading announcement.
-        $response = $this->read();
-
-        if ($response->code !== 220)
-        {
-            throw new Exception("Invalid announcement response: " . $response->code);
-        }
-
-        return $response->messages;
     }
 
     private function doHELO() : void
@@ -163,6 +155,16 @@ class SMTP implements ISMTP
 
     public function doHandshake() : void
     {
+        // Reading announcement.
+        $response = $this->read();
+
+        if ($response->code !== 220)
+        {
+            throw new Exception("Invalid announcement response: " . $response->code);
+        }
+
+        $this->announcements = $response->messages;
+
         // Send EHLO.
         $useHELO = false;
 
