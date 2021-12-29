@@ -17,24 +17,27 @@ class SMTP
     private string $hostName;
     private string $portNumber;
     private float $timeout;
-    private ?ISocket $socket;
+    private ISocket $socket;
 
     public function __construct(
         string $hostName,
         int $portNumber,
         float $timeout = 30,
-        ISocket $socket = null
+        ?ISocket $socket = null
     )
     {
-        $this->isSSL = false;
         $this->hostName = $hostName;
         $this->portNumber = $portNumber;
         $this->timeout = $timeout;
-        $this->socket = $socket;
-
-        if ($this->socket == null)
+        $this->isSSL = false;
+        
+        if ($socket == null)
         {
             $this->socket = new Socket;
+        }
+        else
+        {
+            $this->socket = $socket;
         }
     }
 
