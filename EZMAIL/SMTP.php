@@ -5,7 +5,7 @@ namespace EZMAIL;
 use Exception;
 use InvalidArgumentException;
 
-class SMTP
+class SMTP implements ISMTP
 {
     const BUFFER_SIZE = 512;
     
