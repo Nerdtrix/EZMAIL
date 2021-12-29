@@ -78,7 +78,11 @@ class Socket implements ISocket
 
     public function close() : void
     {
-        fclose($this->connection);
+        try
+        {
+            fclose($this->connection);
+        }
+        catch (Exception) { }
     }
 }
 
