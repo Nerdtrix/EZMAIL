@@ -64,6 +64,7 @@ class MailBuilderTest extends TestCase
                 "file2.txt" => "/home/test/file2.txt"
             ),
             bounceAddress: "bounce@mail.com",
+            replyTo: "reply@mail.com",
             appName: "Test App",
             writer: $writer,
             fileReader: $fileReader
@@ -82,7 +83,7 @@ class MailBuilderTest extends TestCase
         $this->assertEquals("To: To 1 <to1@mail.com>,To 2 <to2@mail.com>", $writer->readHeader());
         $this->assertEquals("Cc: To 3 <to3@mail.com>,To 4 <to4@mail.com>", $writer->readHeader());
         $this->assertEquals("Bcc: To 5 <to5@mail.com>,To 6 <to6@mail.com>", $writer->readHeader());
-        $this->assertEquals("Reply-To: bounce@mail.com", $writer->readHeader());
+        $this->assertEquals("Reply-To: reply@mail.com", $writer->readHeader());
         $this->assertEquals("Content-Type: multipart/mixed; boundary=\"boundary111\"", $writer->readHeader());
         $this->assertEquals("", $writer->readHeader());
         $this->assertEmpty($writer->header);
@@ -149,6 +150,7 @@ class MailBuilderTest extends TestCase
             ),
             attachments: [],
             bounceAddress: "bounce@mail.com",
+            replyTo: "reply@mail.com",
             appName: "Test App",
             writer: $writer,
             fileReader: new FakeFileReader
@@ -167,7 +169,7 @@ class MailBuilderTest extends TestCase
         $this->assertEquals("To: To 1 <to1@mail.com>,To 2 <to2@mail.com>", $writer->readHeader());
         $this->assertEquals("Cc: To 3 <to3@mail.com>,To 4 <to4@mail.com>", $writer->readHeader());
         $this->assertEquals("Bcc: To 5 <to5@mail.com>,To 6 <to6@mail.com>", $writer->readHeader());
-        $this->assertEquals("Reply-To: bounce@mail.com", $writer->readHeader());
+        $this->assertEquals("Reply-To: reply@mail.com", $writer->readHeader());
         $this->assertEquals("Content-Type: multipart/alternative; boundary=\"boundary111\"", $writer->readHeader());
         $this->assertEquals("", $writer->readHeader());
         $this->assertEmpty($writer->header);
@@ -204,6 +206,7 @@ class MailBuilderTest extends TestCase
             bcc: [],
             attachments: [],
             bounceAddress: "bounce@mail.com",
+            replyTo: "reply@mail.com",
             appName: "Test App",
             writer: $writer,
             fileReader: new FakeFileReader
@@ -221,7 +224,7 @@ class MailBuilderTest extends TestCase
         $this->assertEquals("Message-ID: 111", $writer->readHeader());
         $this->assertEquals("To: To 1 <to1@mail.com>,To 2 <to2@mail.com>", $writer->readHeader());
         $this->assertEquals("Cc: To 3 <to3@mail.com>,To 4 <to4@mail.com>", $writer->readHeader());
-        $this->assertEquals("Reply-To: bounce@mail.com", $writer->readHeader());
+        $this->assertEquals("Reply-To: reply@mail.com", $writer->readHeader());
         $this->assertEquals("Content-Type: multipart/alternative; boundary=\"boundary111\"", $writer->readHeader());
         $this->assertEquals("", $writer->readHeader());
         $this->assertEmpty($writer->header);
@@ -252,6 +255,7 @@ class MailBuilderTest extends TestCase
             bcc: [],
             attachments: [],
             bounceAddress: "bounce@mail.com",
+            replyTo: "reply@mail.com",
             appName: "Test App",
             writer: $writer,
             fileReader: new FakeFileReader
@@ -268,7 +272,7 @@ class MailBuilderTest extends TestCase
         $this->assertEquals("From: Sender <sender@mail.com>", $writer->readHeader());
         $this->assertEquals("Message-ID: 111", $writer->readHeader());
         $this->assertEquals("To: To 1 <to1@mail.com>", $writer->readHeader());
-        $this->assertEquals("Reply-To: bounce@mail.com", $writer->readHeader());
+        $this->assertEquals("Reply-To: reply@mail.com", $writer->readHeader());
         $this->assertEquals("Content-Type: multipart/alternative; boundary=\"boundary111\"", $writer->readHeader());
         $this->assertEquals("", $writer->readHeader());
         $this->assertEmpty($writer->header);

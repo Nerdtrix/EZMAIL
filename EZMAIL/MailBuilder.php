@@ -13,6 +13,7 @@ class MailBuilder
     private array $bcc;
     private array $attachments;
     private string $bounceAddress;
+    private string $replyTo;
     private string $appName;
     private IMailBuilderWriter $writer;
     private IFileReader $fileReader;
@@ -27,6 +28,7 @@ class MailBuilder
         array $bcc,
         array $attachments,
         string $bounceAddress,
+        string $replyTo,
         string $appName,
         IMailBuilderWriter $writer,
         ?IFileReader $fileReader = null
@@ -41,6 +43,7 @@ class MailBuilder
         $this->bcc = $bcc;
         $this->attachments = $attachments;
         $this->bounceAddress = $bounceAddress;
+        $this->replyTo = $replyTo;
         $this->appName = $appName;
         $this->writer = $writer;
         
@@ -105,7 +108,7 @@ class MailBuilder
             $this->writer->writeHeader("Bcc: " . $this->generateMimeAddresses($this->bcc));
         }
 
-        $this->writer->writeHeader("Reply-To: " . $this->bounceAddress);
+        $this->writer->writeHeader("Reply-To: " . $this->replyTo);
         $contentType = "multipart/alternative";
 
         if (!empty($this->attachments))
