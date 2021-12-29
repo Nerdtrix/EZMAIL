@@ -421,6 +421,7 @@ class SMTP implements ISMTP
             // Sending QUIT.
             $this->write("QUIT");
         }
+        catch (Exception) { }
         finally
         {
             // Closing socket.

@@ -1170,21 +1170,11 @@ class SMTPTest extends TestCase
             587,
             socket: $socket
         );
-        
-        try
-        {
-            $smtp->quit();
+        $smtp->quit();
 
-            // No error.
-            $this->fail();
-        }
-        catch (Exception $ex)
-        {
-            // Assert.
-            $this->assertTrue($socket->isClosed);
-            $this->assertEmpty($socket->writeStringData);
-            $this->assertEquals("error", $ex->getMessage());
-        }
+        // Assert.
+        $this->assertTrue($socket->isClosed);
+        $this->assertEmpty($socket->writeStringData);
     }
 }
 
