@@ -21,6 +21,17 @@ class MailIdGenerator implements IMailIdGenerator
 
     public function generate() : string
     {
-        return $this->getRandomStr(64) . "@" . $_SERVER["HOST_NAME"];
+        $name = "";
+
+        if (isset($_SERVER["HOST_NAME"]))
+        {
+            $name = $_SERVER["HOST_NAME"];
+        }
+        else
+        {
+            $name = "localhost";
+        }
+
+        return $this->getRandomStr(64) . "@" . $name;
     }
 }
