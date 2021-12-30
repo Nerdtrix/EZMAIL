@@ -11,12 +11,6 @@ class FakeMailBuilder implements IMailBuilder
 
     public array $header = [];
     public array $body = [];
-    private IMailBuilderWriter $writer;
-
-    public function __construct(IMailBuilderWriter $writer)
-    {
-        $this->writer = $writer;
-    }
 
     public function build(
         string $id,
@@ -26,9 +20,9 @@ class FakeMailBuilder implements IMailBuilder
         array $to,
         array $cc,
         array $bcc,
+        array $replyTo,
         array $attachments,
         string $bounceAddress,
-        string $replyTo,
         string $appName,
         IMailBuilderWriter $writer
     ) : void
@@ -43,9 +37,9 @@ class FakeMailBuilder implements IMailBuilder
                 "to" => $to,
                 "cc" => $cc,
                 "bcc" => $bcc,
+                "replyTo" => $replyTo,
                 "attachments" => $attachments,
                 "bounceAddress" => $bounceAddress,
-                "replyTo" => $replyTo,
                 "appName" => $appName,
                 "writer" => $writer
             )
@@ -53,12 +47,12 @@ class FakeMailBuilder implements IMailBuilder
 
         foreach ($this->header as $line)
         {
-            $this->writer->writeHeader($line);
+            $writer->writeHeader($line);
         }
 
         foreach ($this->body as $line)
         {
-            $this->writer->writeBody($line);
+            $writer->writeBody($line);
         }
     }
 }

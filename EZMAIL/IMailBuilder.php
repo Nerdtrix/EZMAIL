@@ -12,9 +12,9 @@ interface IMailBuilder
         array $to,
         array $cc,
         array $bcc,
+        array $replyTo,
         array $attachments,
         string $bounceAddress,
-        string $replyTo,
         string $appName,
         IMailBuilderWriter $writer
     ) : void;

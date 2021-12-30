@@ -63,9 +63,9 @@ class MailBuilder implements IMailBuilder
         array $to,
         array $cc,
         array $bcc,
+        array $replyTo,
         array $attachments,
         string $bounceAddress,
-        string $replyTo,
         string $appName,
         IMailBuilderWriter $writer
     ) : void
@@ -96,7 +96,7 @@ class MailBuilder implements IMailBuilder
             $writer->writeHeader("Bcc: " . $this->generateMimeAddresses($bcc));
         }
 
-        $writer->writeHeader("Reply-To: " . $replyTo);
+        $writer->writeHeader("Reply-To: " . $this->generateMimeAddresses($replyTo, true));
         $contentType = "multipart/alternative";
 
         if (!empty($attachments))
@@ -180,9 +180,9 @@ class MailBuilder implements IMailBuilder
         array $to,
         array $cc,
         array $bcc,
+        array $replyTo,
         array $attachments,
         string $bounceAddress,
-        string $replyTo,
         string $appName,
         IMailBuilderWriter $writer
     ) : void
@@ -194,9 +194,9 @@ class MailBuilder implements IMailBuilder
             $to,
             $cc,
             $bcc,
+            $replyTo,
             $attachments,
             $bounceAddress,
-            $replyTo,
             $appName,
             $writer
         );
