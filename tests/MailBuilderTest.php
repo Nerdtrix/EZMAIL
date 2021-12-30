@@ -62,7 +62,7 @@ class MailBuilderTest extends TestCase
             ),
             attachments: array(
                 "file.txt" => "/home/test/file.txt",
-                "file2.txt" => "/home/test/file2.txt"
+                "/home/test/file2.txt"
             ),
             bounceAddress: "bounce@mail.com",
             replyTo: "reply@mail.com",

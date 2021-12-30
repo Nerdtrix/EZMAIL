@@ -142,6 +142,11 @@ class MailBuilder implements IMailBuilder
     {
         foreach ($attachments as $name => $path)
         {
+            if (is_int($name))
+            {
+                $name = basename($path);
+            }
+
             $writer->writeBody("--" . $this->getBoundary($id));
             $writer->writeBody(
                 sprintf("Content-Type: application/octet-stream; name=\"%s\"", $name)
