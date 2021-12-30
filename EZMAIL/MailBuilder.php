@@ -20,13 +20,32 @@ class MailBuilder implements IMailBuilder
         }
     }
 
-    private function generateMimeAddresses(array $addresses) : string
+    private function generateMimeAddresses(array $addresses, bool $onlyOne = false) : string
     {
         $result = "";
 
         foreach ($addresses as $name => $address)
         {
-            $result .= sprintf("%s <%s>,", $name, $address);
+            if (is_string($name))
+            {
+                // With name.
+                $result .= sprintf("%s <%s>,", $name, $address);
+            }
+            else
+            {
+                // No name.
+                $result .= sprintf("<%s>,", $address);
+            }
+
+            if ($onlyOne)
+            {
+                break;
+            }
+        }
+
+        if (empty($result))
+        {
+            return "";
         }
 
         return substr($result, 0, strlen($result) - 1);
@@ -62,13 +81,7 @@ class MailBuilder implements IMailBuilder
             )
         );
         $writer->writeHeader("Return-Path: " . $bounceAddress);
-        $writer->writeHeader(
-            sprintf(
-                "From: %s <%s>",
-                key($from),
-                end($from)
-            )
-        );
+        $writer->writeHeader("From: " . $this->generateMimeAddresses($from, true));
         $writer->writeHeader("Message-ID: " . $id);
         $writer->writeHeader("To: " . $this->generateMimeAddresses($to));
         

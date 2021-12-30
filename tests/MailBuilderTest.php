@@ -50,14 +50,14 @@ class MailBuilderTest extends TestCase
             from: array("Sender" => "sender@mail.com"),
             to: array(
                 "To 1" => "to1@mail.com",
-                "To 2" => "to2@mail.com",
+                "to2@mail.com",
             ),
             cc: array(
                 "To 3" => "to3@mail.com",
-                "To 4" => "to4@mail.com",
+                "to4@mail.com",
             ),
             bcc: array(
-                "To 5" => "to5@mail.com",
+                "to5@mail.com",
                 "To 6" => "to6@mail.com",
             ),
             attachments: array(
@@ -79,9 +79,9 @@ class MailBuilderTest extends TestCase
         $this->assertEquals("Return-Path: bounce@mail.com", $writer->readHeader());
         $this->assertEquals("From: Sender <sender@mail.com>", $writer->readHeader());
         $this->assertEquals("Message-ID: 111", $writer->readHeader());
-        $this->assertEquals("To: To 1 <to1@mail.com>,To 2 <to2@mail.com>", $writer->readHeader());
-        $this->assertEquals("Cc: To 3 <to3@mail.com>,To 4 <to4@mail.com>", $writer->readHeader());
-        $this->assertEquals("Bcc: To 5 <to5@mail.com>,To 6 <to6@mail.com>", $writer->readHeader());
+        $this->assertEquals("To: To 1 <to1@mail.com>,<to2@mail.com>", $writer->readHeader());
+        $this->assertEquals("Cc: To 3 <to3@mail.com>,<to4@mail.com>", $writer->readHeader());
+        $this->assertEquals("Bcc: <to5@mail.com>,To 6 <to6@mail.com>", $writer->readHeader());
         $this->assertEquals("Reply-To: reply@mail.com", $writer->readHeader());
         $this->assertEquals("Content-Type: multipart/mixed; boundary=\"boundary111\"", $writer->readHeader());
         $this->assertEquals("", $writer->readHeader());
@@ -135,19 +135,10 @@ class MailBuilderTest extends TestCase
             id: "111",
             subject: "this is subject",
             message: "this is message",
-            from: array("Sender" => "sender@mail.com"),
-            to: array(
-                "To 1" => "to1@mail.com",
-                "To 2" => "to2@mail.com",
-            ),
-            cc: array(
-                "To 3" => "to3@mail.com",
-                "To 4" => "to4@mail.com",
-            ),
-            bcc: array(
-                "To 5" => "to5@mail.com",
-                "To 6" => "to6@mail.com",
-            ),
+            from: array("sender@mail.com"),
+            to: array("To 1" => "to1@mail.com"),
+            cc: array("To 3" => "to3@mail.com",),
+            bcc: array("To 5" => "to5@mail.com"),
             attachments: [],
             bounceAddress: "bounce@mail.com",
             replyTo: "reply@mail.com",
@@ -162,11 +153,11 @@ class MailBuilderTest extends TestCase
         $this->assertEquals("Priority: 3", $writer->readHeader());
         $this->assertEquals("Subject: =?utf-8?B?dGhpcyBpcyBzdWJqZWN0?=", $writer->readHeader());
         $this->assertEquals("Return-Path: bounce@mail.com", $writer->readHeader());
-        $this->assertEquals("From: Sender <sender@mail.com>", $writer->readHeader());
+        $this->assertEquals("From: <sender@mail.com>", $writer->readHeader());
         $this->assertEquals("Message-ID: 111", $writer->readHeader());
-        $this->assertEquals("To: To 1 <to1@mail.com>,To 2 <to2@mail.com>", $writer->readHeader());
-        $this->assertEquals("Cc: To 3 <to3@mail.com>,To 4 <to4@mail.com>", $writer->readHeader());
-        $this->assertEquals("Bcc: To 5 <to5@mail.com>,To 6 <to6@mail.com>", $writer->readHeader());
+        $this->assertEquals("To: To 1 <to1@mail.com>", $writer->readHeader());
+        $this->assertEquals("Cc: To 3 <to3@mail.com>", $writer->readHeader());
+        $this->assertEquals("Bcc: To 5 <to5@mail.com>", $writer->readHeader());
         $this->assertEquals("Reply-To: reply@mail.com", $writer->readHeader());
         $this->assertEquals("Content-Type: multipart/alternative; boundary=\"boundary111\"", $writer->readHeader());
         $this->assertEquals("", $writer->readHeader());
