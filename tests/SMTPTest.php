@@ -891,10 +891,7 @@ class SMTPTest extends TestCase
         );
         $smtp->startSendMail(
             "sender@mail.com",
-            array(
-                "Receiver 1" => "recv1@mail.com",
-                "Receiver 2" => "recv2@mail.com"
-            )
+            [ "recv1@mail.com", "recv2@mail.com" ]
         );
 
         // Assert.
@@ -902,9 +899,9 @@ class SMTPTest extends TestCase
         $this->assertEmpty($socket->readStringResults);
 
         $this->assertEquals(4, count($socket->writeStringData));
-        $this->assertEquals("MAIL FROM:<sender@mail.com>" . PHP_CRLF, $socket->writeStringData[0]);
-        $this->assertEquals("RCPT TO:<recv1@mail.com>" . PHP_CRLF, $socket->writeStringData[1]);
-        $this->assertEquals("RCPT TO:<recv2@mail.com>" . PHP_CRLF, $socket->writeStringData[2]);
+        $this->assertEquals("MAIL FROM: <sender@mail.com>" . PHP_CRLF, $socket->writeStringData[0]);
+        $this->assertEquals("RCPT TO: <recv1@mail.com>" . PHP_CRLF, $socket->writeStringData[1]);
+        $this->assertEquals("RCPT TO: <recv2@mail.com>" . PHP_CRLF, $socket->writeStringData[2]);
         $this->assertEquals("DATA" . PHP_CRLF, $socket->writeStringData[3]);
     }
 
@@ -925,7 +922,7 @@ class SMTPTest extends TestCase
         {
             $smtp->startSendMail(
                 "sender@mail.com",
-                array("Receiver 1" => "recv1@mail.com")
+                [ "recv1@mail.com" ]
             );
 
             // No error.
@@ -938,7 +935,7 @@ class SMTPTest extends TestCase
             $this->assertEmpty($socket->readStringResults);
 
             $this->assertEquals(1, count($socket->writeStringData));
-            $this->assertEquals("MAIL FROM:<sender@mail.com>" . PHP_CRLF, $socket->writeStringData[0]);
+            $this->assertEquals("MAIL FROM: <sender@mail.com>" . PHP_CRLF, $socket->writeStringData[0]);
 
             $this->assertEquals("Invalid MAIL FROM response: 420", $ex->getMessage());
         }
@@ -962,7 +959,7 @@ class SMTPTest extends TestCase
         {
             $smtp->startSendMail(
                 "sender@mail.com",
-                array("Receiver 1" => "recv1@mail.com")
+                [ "recv1@mail.com" ]
             );
 
             // No error.
@@ -975,8 +972,8 @@ class SMTPTest extends TestCase
             $this->assertEmpty($socket->readStringResults);
 
             $this->assertEquals(2, count($socket->writeStringData));
-            $this->assertEquals("MAIL FROM:<sender@mail.com>" . PHP_CRLF, $socket->writeStringData[0]);
-            $this->assertEquals("RCPT TO:<recv1@mail.com>" . PHP_CRLF, $socket->writeStringData[1]);
+            $this->assertEquals("MAIL FROM: <sender@mail.com>" . PHP_CRLF, $socket->writeStringData[0]);
+            $this->assertEquals("RCPT TO: <recv1@mail.com>" . PHP_CRLF, $socket->writeStringData[1]);
 
             $this->assertEquals("Invalid RCPT TO response: 420", $ex->getMessage());
         }
@@ -1001,7 +998,7 @@ class SMTPTest extends TestCase
         {
             $smtp->startSendMail(
                 "sender@mail.com",
-                array("Receiver 1" => "recv1@mail.com")
+                [ "recv1@mail.com" ]
             );
 
             // No error.
@@ -1014,8 +1011,8 @@ class SMTPTest extends TestCase
             $this->assertEmpty($socket->readStringResults);
 
             $this->assertEquals(3, count($socket->writeStringData));
-            $this->assertEquals("MAIL FROM:<sender@mail.com>" . PHP_CRLF, $socket->writeStringData[0]);
-            $this->assertEquals("RCPT TO:<recv1@mail.com>" . PHP_CRLF, $socket->writeStringData[1]);
+            $this->assertEquals("MAIL FROM: <sender@mail.com>" . PHP_CRLF, $socket->writeStringData[0]);
+            $this->assertEquals("RCPT TO: <recv1@mail.com>" . PHP_CRLF, $socket->writeStringData[1]);
             $this->assertEquals("DATA" . PHP_CRLF, $socket->writeStringData[2]);
 
             $this->assertEquals("Invalid DATA response: 420", $ex->getMessage());

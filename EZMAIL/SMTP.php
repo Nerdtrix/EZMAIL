@@ -347,7 +347,7 @@ class SMTP implements ISMTP
     {
         // Sending MAIL FROM.
         $this->write(
-            sprintf("MAIL FROM:<%s>", $from)
+            sprintf("MAIL FROM: <%s>", $from)
         );
 
         // Reading response.
@@ -359,11 +359,11 @@ class SMTP implements ISMTP
         }
 
         // Sending receipents.
-        foreach ($to as $name => $address)
+        foreach ($to as $address)
         {
             // Sending RCPT TO.
             $this->write(
-                sprintf("RCPT TO:<%s>", $address)
+                sprintf("RCPT TO: <%s>", $address)
             );
 
             // Reading response.
