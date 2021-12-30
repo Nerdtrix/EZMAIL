@@ -4,6 +4,7 @@ namespace EZMAIL;
 
 use Exception;
 use finfo;
+use InvalidArgumentException;
 
 class EZMAIL implements IMailBuilderWriter
 {
@@ -22,9 +23,9 @@ class EZMAIL implements IMailBuilderWriter
     public array $to;
     public array $cc;
     public array $bcc;
+    public array $replyTo;
     public array $attachments;
     public string $bounceAddress;
-    public string $replyTo;
 
     private ISMTPFactory $smtpFactory;
     private IMailIdGenerator $mailIdGenerator;
@@ -34,28 +35,24 @@ class EZMAIL implements IMailBuilderWriter
 
     public function __construct(
         // Message.
-        string $subject,
-        string $body,
-        array $to,
-
-        // Connection.
-        string $appName,
-        string $hostName,
-        int $portNumber,
-        string $username,
-        string $password,
-
-        // Message.
+        string $subject = "",
+        string $body = "",
         array $from = [],
+        array $to = [],
         array $cc = [],
         array $bcc = [],
+        array $replyTo = [],
         array $attachments = [],
         string $bounceAddress = "",
-        string $replyTo = "",
 
         // Connection.
+        string $appName = "EZMAIL",
+        string $hostName = "",
+        int $portNumber = 587,
         float $timeout = 30,
         int $authType = SMTP::AUTH_TYPE_STANDARD,
+        string $username = "",
+        string $password = "",
         string $authToken = "",
 
         // DI.
@@ -111,8 +108,59 @@ class EZMAIL implements IMailBuilderWriter
         }
     }
 
-    public function send() : void
+    private function validate() : void
     {
+        if (empty($this->subject))
+        {
+            throw new InvalidArgumentException("Message subject is empty");
+        }
+
+        if (empty($this->body))
+        {
+            throw new InvalidArgumentException("Message body is empty");
+        }
+
+        if (empty($this->to))
+        {
+            throw new InvalidArgumentException("No message recipients");
+        }
+
+        if (empty($this->hostName))
+        {
+            throw new InvalidArgumentException("Hostname is empty");
+        }
+
+        if (empty($this->username))
+        {
+            throw new InvalidArgumentException("Username is empty");
+        }
+
+        if ($this->authType === SMTP::AUTH_TYPE_2AUTH)
+        {
+            if (empty($this->authToken))
+            {
+                throw new InvalidArgumentException("Auth token is empty");
+            }
+        }
+        else
+        {
+            if (empty($this->password))
+            {
+                throw new InvalidArgumentException("Password is empty");
+            }
+        }
+
+        if (count($this->from) > 1)
+        {
+            throw new InvalidArgumentException("Too many sender");
+        }
+    }
+
+    public function send() : string
+    {
+        // Validating.
+        $this->validate();
+
         // Creating SMTP instance.
         $this->smtp = $this->smtpFactory->create(
             $this->hostName,
@@ -120,12 +168,76 @@ class EZMAIL implements IMailBuilderWriter
             $this->timeout
         );
 
-        // Connecting.
-        $this->smtp->connect();
-
         try
         {
+            // Connecting.
+            $this->smtp->connect();
+
+            // Do handshake.
+            $this->smtp->doHandshake();
+
+            // Authenticating.
+            $useAuthToken = $this->authType === SMTP::AUTH_TYPE_2AUTH;
+            $this->smtp->doAuth(
+                $this->username,
+                $useAuthToken ? $this->authToken : $this->password,
+                $this->authType
+            );
             
+            // Start mail session.
+            $fromAddress = $this->username;
+
+            if (!empty($this->from))
+            {
+                $fromAddress = array_values($this->from)[0];
+            }
+
+            $this->smtp->startSendMail($fromAddress, $this->to);
+
+            // Sending mail data.
+            $mailId = $this->mailIdGenerator->generate();
+            $from = $this->from;
+
+            if (empty($from))
+            {
+                $from = [ $this->username ];
+            }
+
+            $replyTo = $this->replyTo;
+
+            if (empty($replyTo))
+            {
+                $replyTo = [ $this->username ];
+            }
+
+            $this->mailBuilder->build(
+                $mailId,
+                $this->subject,
+                $this->body,
+                $from,
+                $this->to,
+                $this->cc,
+                $this->bcc,
+                $replyTo,
+                $this->attachments,
+                $this->bounceAddress,
+                $this->appName,
+                $this // will write back to $smtp.
+            );
+
+            // Done mail session.
+            $mailIdResult = $this->smtp->endSendMail();
+
+            if ($mailId !== $mailIdResult)
+            {
+                throw new Exception(sprintf(
+                    "Unable to verify mail id. Expected: %s. Got: %s.",
+                    $mailId,
+                    $mailIdResult
+                ));
+            }
+
+            return $mailId;
         }
         finally
         {

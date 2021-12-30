@@ -7,10 +7,15 @@ use EZMAIL\ISMTPFactory;
 
 class FakeSMTPFactory implements ISMTPFactory
 {
-    public ?FakeSMTP $result = null;
+    public FakeSMTP $result;
     public ?string $hostName = null;
     public ?int $portNumber = null;
     public float $timeout = 0;
+
+    public function __construct()
+    {
+        $this->result = new FakeSMTP;
+    }
 
     public function create(
         string $hostName,
