@@ -30,6 +30,7 @@ class EZMAIL implements IMailBuilderWriter
     private ISMTPFactory $smtpFactory;
     private IMailIdGenerator $mailIdGenerator;
     private IMailBuilder $mailBuilder;
+    private ILogger $logger;
 
     private ?ISMTP $smtp = null;
 
@@ -54,11 +55,13 @@ class EZMAIL implements IMailBuilderWriter
         string $username = "",
         string $password = "",
         string $authToken = "",
+        bool $isDebug = false,
 
         // DI.
         ?ISMTPFactory $smtpFactory = null,
         ?IMailIdGenerator $mailIdGenerator = null,
-        ?IMailBuilder $mailBuilder = null
+        ?IMailBuilder $mailBuilder = null,
+        ?ILogger $logger = null
     )
     {
         $this->appName = $appName;
@@ -80,9 +83,25 @@ class EZMAIL implements IMailBuilderWriter
         $this->bounceAddress = $bounceAddress;
         $this->replyTo = $replyTo;
 
+        if ($logger == null)
+        {
+            if ($isDebug)
+            {
+                $this->logger = new Logger;
+            }
+            else
+            {
+                $this->logger = new EmptyLogger;
+            }
+        }
+        else
+        {
+            $this->logger = $logger;
+        }
+
         if ($smtpFactory == null)
         {
-            $this->smtpFactory = new SMTPFactory;
+            $this->smtpFactory = new SMTPFactory($this->logger);
         }
         else
         {

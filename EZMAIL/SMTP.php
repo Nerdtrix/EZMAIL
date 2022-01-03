@@ -20,12 +20,14 @@ class SMTP implements ISMTP
     private string $portNumber;
     private float $timeout;
     private ISocket $socket;
+    private ILogger $logger;
 
     public function __construct(
         string $hostName,
         int $portNumber,
         float $timeout = 30,
-        ?ISocket $socket = null
+        ?ISocket $socket = null,
+        ?ILogger $logger = null
     )
     {
         $this->hostName = $hostName;
@@ -41,6 +43,15 @@ class SMTP implements ISMTP
         {
             $this->socket = $socket;
         }
+
+        if ($logger == null)
+        {
+            $this->logger = new EmptyLogger;
+        }
+        else
+        {
+            $this->logger = $logger;
+        }
     }
 
     private function read() : object
@@ -52,6 +63,7 @@ class SMTP implements ISMTP
         while (true)
         {
             $response = $this->socket->readString(self::BUFFER_SIZE);
+            $this->logger->log("SMTPRECV:" . trim($response));
             
             if (strlen($response) < 3)
             {
@@ -87,6 +99,7 @@ class SMTP implements ISMTP
 
     private function write(string $command) : void
     {
+        $this->logger->log("SMTPSEND:" . $command);
         $this->socket->writeString($command . PHP_CRLF);
     }
 
@@ -96,6 +109,7 @@ class SMTP implements ISMTP
 
         if ($this->portNumber == 465 && !$this->isSSL)
         {
+            $this->logger->log("Forcing SSL on port 465");
             $this->hostName = "ssl://" . $this->hostName;
             $this->isSSL = true;
         }
@@ -106,6 +120,7 @@ class SMTP implements ISMTP
             $this->portNumber,
             $this->timeout
         );
+        $this->logger->log("Connected to smtp server");
     }
 
     private function doHELO() : void
@@ -164,12 +179,17 @@ class SMTP implements ISMTP
         }
 
         $this->announcements = $response->messages;
+        $this->logger->log(
+            "Server announcement: %s",
+            implode(";", $this->announcements)
+        );
 
         // Send EHLO.
         $useHELO = false;
 
         if (!$this->doEHLO())
         {
+            $this->logger->log("Using HELO instead of EHLO");
             $this->doHELO();
             $useHELO = true;
         }
@@ -177,6 +197,7 @@ class SMTP implements ISMTP
         if ($this->isSSL)
         {
             // Already secure.
+            $this->logger->log("Skipping STARTTLS on SSL connection");
             return;
         }
 
@@ -193,6 +214,7 @@ class SMTP implements ISMTP
 
         // Upgrading socket.
         $this->socket->enableCrypto();
+        $this->logger->log("Connection to smtp server is secured");
 
         // Sending EHLO/HELO.
         if ($useHELO)
@@ -324,14 +346,17 @@ class SMTP implements ISMTP
     {
         if ($authType == self::AUTH_TYPE_STANDARD)
         {
+            $this->logger->log("Doing standard auth");
             $this->doStandardAuth($username, $password);
         }
         else if ($authType == self::AUTH_TYPE_PLAIN)
         {
+            $this->logger->log("Doing plain auth");
             $this->doPlainAuth($username, $password);
         }
         else if ($authType == self::AUTH_TYPE_2AUTH)
         {
+            $this->logger->log("Doing 2auth");
             $this->do2Auth($username, $password);
         }
         else
@@ -385,6 +410,8 @@ class SMTP implements ISMTP
         {
             throw new Exception("Invalid DATA response: " . $response->code);
         }
+
+        $this->logger->log("Ready to send mail data");
     }
 
     public function writeMailData(string $data) : void
@@ -405,6 +432,7 @@ class SMTP implements ISMTP
             throw new Exception("Invalid DATA end response: " . $response->code);
         }
 
+        $this->logger->log("Mail data sent");
         $responseSplit = explode(" ", $response->messages[0]);
 
         if (count($responseSplit) < 3)
@@ -428,6 +456,7 @@ class SMTP implements ISMTP
         {
             // Closing socket.
             $this->socket->close();
+            $this->logger->log("Disconnected from smtp server");
         }
     }
 }
