@@ -46,7 +46,7 @@ class EZMAIL implements IMailBuilderWriter
         array $replyTo = [],
         array $attachments = [],
         string $bounceAddress = "",
-        bool $skipMessageIdValidation = false,
+        bool $skipMessageIdValidation = true,
 
         // Connection.
         string $appName = "EZMAIL",

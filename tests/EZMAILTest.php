@@ -365,7 +365,7 @@ class EZMAILTest extends TestCase
         $this->assertEquals("user@mail.com", $buildArgs["bounceAddress"]);
     }
 
-    public function testSendHandleMismatchMailId()
+    public function testSendDoMessageIdValidation()
     {
         // Fake mail id.
         $this->mailIdGenerator->result = "111";
@@ -377,6 +377,7 @@ class EZMAILTest extends TestCase
         $this->ezmail->subject = "this is subject";
         $this->ezmail->body = "this is message";
         $this->ezmail->to = [ "Mr Recv" => "recv@mail.com" ];
+        $this->ezmail->skipMessageIdValidation = false;
 
         $this->ezmail->appName = "Test App";
         $this->ezmail->hostName = "smtp.mail.com";
@@ -405,7 +406,7 @@ class EZMAILTest extends TestCase
         }
     }
 
-    public function testSendSkipMessageIdValidation()
+    public function testSendHandleMismatchMailId()
     {
         // Fake mail id.
         $this->mailIdGenerator->result = "111";
@@ -417,7 +418,6 @@ class EZMAILTest extends TestCase
         $this->ezmail->subject = "this is subject";
         $this->ezmail->body = "this is message";
         $this->ezmail->to = [ "Mr Recv" => "recv@mail.com" ];
-        $this->ezmail->skipMessageIdValidation = true;
 
         $this->ezmail->appName = "Test App";
         $this->ezmail->hostName = "smtp.mail.com";
