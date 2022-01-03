@@ -179,10 +179,6 @@ class SMTP implements ISMTP
         }
 
         $this->announcement = implode(" ", $response->messages);
-        $this->logger->log(
-            "Server announcement: %s",
-            $this->announcement
-        );
 
         // Send EHLO.
         $useHELO = false;
