@@ -13,7 +13,7 @@ class SMTP implements ISMTP
     const AUTH_TYPE_PLAIN = 2;
     const AUTH_TYPE_2AUTH = 3;
 
-    public array $announcements = [];
+    public string $announcement = "";
 
     private bool $isSSL;
     private string $hostName;
@@ -178,10 +178,10 @@ class SMTP implements ISMTP
             throw new Exception("Invalid announcement response: " . $response->code);
         }
 
-        $this->announcements = $response->messages;
+        $this->announcement = implode(" ", $response->messages);
         $this->logger->log(
             "Server announcement: %s",
-            implode(";", $this->announcements)
+            $this->announcement
         );
 
         // Send EHLO.

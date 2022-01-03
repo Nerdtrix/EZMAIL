@@ -81,10 +81,7 @@ class SMTPTest extends TestCase
         $this->assertEquals("STARTTLS" . PHP_CRLF, $socket->writeStringData[1]);
         $this->assertEquals("EHLO localhost" . PHP_CRLF, $socket->writeStringData[2]);
 
-        $this->assertEquals(3, count($smtp->announcements));
-        $this->assertEquals("server", $smtp->announcements[0]);
-        $this->assertEquals("is", $smtp->announcements[1]);
-        $this->assertEquals("ready", $smtp->announcements[2]);
+        $this->assertEquals("server is ready", $smtp->announcement);
     }
 
     public function testDoHandshakeWithAnnouncementError()
@@ -148,8 +145,7 @@ class SMTPTest extends TestCase
         $this->assertEquals("STARTTLS" . PHP_CRLF, $socket->writeStringData[2]);
         $this->assertEquals("HELO localhost" . PHP_CRLF, $socket->writeStringData[3]);
 
-        $this->assertEquals(1, count($smtp->announcements));
-        $this->assertEquals("server is ready", $smtp->announcements[0]);
+        $this->assertEquals("server is ready", $smtp->announcement);
     }
 
     public function testDoHandshakeHandleHELOError()
