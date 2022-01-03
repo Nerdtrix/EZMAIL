@@ -16,6 +16,7 @@ class EZMAIL implements IMailBuilderWriter
     public string $username;
     public string $password;
     public string $authToken;
+    public bool $skipMessageIdValidation;
 
     public string $subject;
     public string $body;
@@ -45,6 +46,7 @@ class EZMAIL implements IMailBuilderWriter
         array $replyTo = [],
         array $attachments = [],
         string $bounceAddress = "",
+        bool $skipMessageIdValidation = false,
 
         // Connection.
         string $appName = "EZMAIL",
@@ -72,6 +74,7 @@ class EZMAIL implements IMailBuilderWriter
         $this->username = $username;
         $this->password = $password;
         $this->authToken = $authToken;
+        $this->skipMessageIdValidation = $skipMessageIdValidation;
 
         $this->subject = $subject;
         $this->body = $body;
@@ -254,7 +257,11 @@ class EZMAIL implements IMailBuilderWriter
             // Done mail session.
             $mailIdResult = $this->smtp->endSendMail();
 
-            if ($mailId !== $mailIdResult)
+            if ($this->skipMessageIdValidation)
+            {
+                $mailId = $mailIdResult;
+            }
+            else if ($mailId !== $mailIdResult)
             {
                 throw new Exception(sprintf(
                     "Unable to verify mail id. Expected: %s. Got: %s.",

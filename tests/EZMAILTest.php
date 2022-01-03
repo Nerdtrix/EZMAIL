@@ -404,6 +404,39 @@ class EZMAILTest extends TestCase
             $this->assertEquals("Unable to verify mail id. Expected: 111. Got: 112.", $ex->getMessage());
         }
     }
+
+    public function testSendSkipMessageIdValidation()
+    {
+        // Fake mail id.
+        $this->mailIdGenerator->result = "111";
+
+        // Fake smtp send result.
+        $this->smtpFactory->result->endSendMailResult = "112";
+
+        // Parameters.
+        $this->ezmail->subject = "this is subject";
+        $this->ezmail->body = "this is message";
+        $this->ezmail->to = [ "Mr Recv" => "recv@mail.com" ];
+        $this->ezmail->skipMessageIdValidation = true;
+
+        $this->ezmail->appName = "Test App";
+        $this->ezmail->hostName = "smtp.mail.com";
+        $this->ezmail->portNumber = 123;
+        $this->ezmail->username = "user@mail.com";
+        $this->ezmail->password = "password123";
+        $this->ezmail->authToken = "token123";
+
+        // Test.
+        $result = $this->ezmail->send();
+
+        // Assert.
+        $this->assertEquals("112", $result);
+        $this->assertEquals("smtp.mail.com", $this->smtpFactory->hostName);
+        $this->assertEquals(123, $this->smtpFactory->portNumber);
+        $this->assertTrue($this->smtpFactory->result->isConnected);
+        $this->assertTrue($this->smtpFactory->result->doneHandshake);
+        $this->assertTrue($this->smtpFactory->result->hasQuit);
+    }
 }
 
 ?>
