@@ -334,6 +334,37 @@ class EZMAILTest extends TestCase
         $this->assertEquals([ "user@mail.com" ], $buildArgs["replyTo"]);
     }
 
+    public function testSendHandleEmptyBounceAddress()
+    {
+        // Fake mail id.
+        $this->mailIdGenerator->result = "111";
+
+        // Fake smtp send result.
+        $this->smtpFactory->result->endSendMailResult = "111";
+
+        // Parameters.
+        $this->ezmail->subject = "this is subject";
+        $this->ezmail->body = "this is message";
+        $this->ezmail->from = [ "Mr From" => "from@mail.com" ];
+        $this->ezmail->to = [ "Mr Recv" => "recv@mail.com" ];
+
+        $this->ezmail->appName = "Test App";
+        $this->ezmail->hostName = "smtp.mail.com";
+        $this->ezmail->portNumber = 123;
+        $this->ezmail->username = "user@mail.com";
+        $this->ezmail->password = "password123";
+        $this->ezmail->authToken = "token123";
+
+        // Test.
+        $this->ezmail->send();
+
+        // Assert.
+        $this->assertEquals(1, count($this->mailBuilder->buildArgs));
+        $buildArgs = $this->mailBuilder->buildArgs[0];
+        $this->assertEquals($this->ezmail, $buildArgs["writer"]);
+        $this->assertEquals("user@mail.com", $buildArgs["bounceAddress"]);
+    }
+
     public function testSendHandleMismatchMailId()
     {
         // Fake mail id.

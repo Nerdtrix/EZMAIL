@@ -229,6 +229,13 @@ class EZMAIL implements IMailBuilderWriter
                 $replyTo = [ $this->username ];
             }
 
+            $bounceAddress = $this->bounceAddress;
+
+            if (empty($bounceAddress))
+            {
+                $bounceAddress = $this->username;
+            }
+
             $this->mailBuilder->build(
                 $mailId,
                 $this->subject,
@@ -239,7 +246,7 @@ class EZMAIL implements IMailBuilderWriter
                 $this->bcc,
                 $replyTo,
                 $this->attachments,
-                $this->bounceAddress,
+                $bounceAddress,
                 $this->appName,
                 $this // will write back to $smtp.
             );
