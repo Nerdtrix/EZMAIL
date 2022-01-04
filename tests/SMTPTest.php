@@ -1060,6 +1060,24 @@ class SMTPTest extends TestCase
         $this->assertEquals("111@host.com", $mailId);
     }
 
+    public function testEndSendMailHandleOtherMailIdFormat()
+    {
+        // Fake socket.
+        $socket = new FakeSocket;
+        array_push($socket->readStringResults, "250 OK id=1n4Qbl-001F0F-ET"); // .
+
+        // Test.
+        $smtp = new SMTP(
+            "localhost",
+            587,
+            socket: $socket
+        );
+        $mailId = $smtp->endSendMail();
+
+        // Assert.
+        $this->assertEquals("1n4Qbl-001F0F-ET", $mailId);
+    }
+
     public function testEndSendMailHandleError()
     {
         // Fake socket.
@@ -1093,7 +1111,7 @@ class SMTPTest extends TestCase
         }
     }
 
-    public function testEndSendMailHandleInvalidResponseLength()
+    public function testEndSendMailHandleInvalidResponse()
     {
         // Fake socket.
         $socket = new FakeSocket;
@@ -1122,7 +1140,7 @@ class SMTPTest extends TestCase
             $this->assertEquals(1, count($socket->writeStringData));
             $this->assertEquals("." . PHP_CRLF, $socket->writeStringData[0]);
 
-            $this->assertEquals("Invalid DATA response: what", $ex->getMessage());
+            $this->assertEquals("Invalid DATA end response: what", $ex->getMessage());
         }
     }
 

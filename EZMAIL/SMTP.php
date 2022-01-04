@@ -429,15 +429,23 @@ class SMTP implements ISMTP
         }
 
         $this->logger->log("Mail data sent");
-        $responseSplit = explode(" ", $response->messages[0]);
+        $okpos = strpos($response->messages[0], "OK ");
 
-        if (count($responseSplit) < 3)
+        if ($okpos === false)
         {
-            throw new Exception("Invalid DATA response: " . $response->messages[0]);
+            throw new Exception("Invalid DATA end response: " . $response->messages[0]);
         }
 
-        $result = $responseSplit[2];
-        return trim($result, "<>");
+        $result = substr($response->messages[0], $okpos + 3); // Skip "OK ".
+        $result = explode(" ", $result, 1)[0]; // Get only the first string after OK.
+        $result = trim($result, "<>"); // Remove <> brackets.
+
+        if (str_starts_with($result, "id=")) // Some hostings use this format.
+        {
+            $result = substr($result, 3);
+        }
+
+        return $result;
     }
 
     public function quit() : void
