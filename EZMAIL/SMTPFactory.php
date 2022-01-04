@@ -30,7 +30,8 @@ class SMTPFactory implements ISMTPFactory
             $hostName,
             $portNumber,
             $timeout,
-            logger: $this->logger
+            null, // Use default socket.
+            $this->logger
         );
     }
 }
