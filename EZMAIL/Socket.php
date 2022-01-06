@@ -82,7 +82,7 @@ class Socket implements ISocket
         {
             fclose($this->connection);
         }
-        catch (Exception) { }
+        catch (Exception $ex) { }
     }
 }
 
