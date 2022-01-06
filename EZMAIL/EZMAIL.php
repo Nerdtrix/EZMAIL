@@ -3,7 +3,6 @@
 namespace EZMAIL;
 
 use Exception;
-use finfo;
 use InvalidArgumentException;
 
 class EZMAIL implements IMailBuilderWriter
