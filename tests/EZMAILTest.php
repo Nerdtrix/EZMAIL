@@ -300,7 +300,7 @@ class EZMAILTest extends TestCase
         $this->assertEquals(1, count($this->mailBuilder->buildArgs));
         $buildArgs = $this->mailBuilder->buildArgs[0];
         $this->assertEquals($this->ezmail, $buildArgs["writer"]);
-        $this->assertEquals([ "user@mail.com" ], $buildArgs["from"]);
+        $this->assertEquals([ "Test App" => "user@mail.com" ], $buildArgs["from"]);
     }
 
     public function testSendHandleEmptyReplyTo()

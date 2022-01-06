@@ -222,7 +222,7 @@ class EZMAIL implements IMailBuilderWriter
 
             if (empty($from))
             {
-                $from = [ $this->username ];
+                $from = [ $this->appName => $this->username ];
             }
 
             $replyTo = $this->replyTo;
