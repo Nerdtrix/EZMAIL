@@ -1,7 +1,6 @@
 # EZMAIL 
 
-[![Latest Stable Version](http://poser.pugx.org/ezmail/ezmail/v)](https://packagist.org/packages/ezmail/ezmail)
-[![Total Downloads](http://poser.pugx.org/ezmail/ezmail/downloads)](https://packagist.org/packages/ezmail/ezmail) 
+[![Latest Stable Version](http://poser.pugx.org/ezmail/ezmail/v)](https://packagist.org/packages/ezmail/ezmail)downloads)](https://packagist.org/packages/ezmail/ezmail) 
 [![License](http://poser.pugx.org/ezmail/ezmail/license)](https://packagist.org/packages/ezmail/ezmail) 
 [![PHP Version Require](http://poser.pugx.org/ezmail/ezmail/require/php)](https://packagist.org/packages/ezmail/ezmail)
 
