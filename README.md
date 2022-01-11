@@ -1,6 +1,6 @@
 # EZMAIL 
 
-[![Latest Stable Version](http://poser.pugx.org/ezmail/ezmail/v)](https://packagist.org/packages/ezmail/ezmail)downloads)](https://packagist.org/packages/ezmail/ezmail) 
+[![Latest Stable Version](http://poser.pugx.org/ezmail/ezmail/v)](https://packagist.org/packages/ezmail/ezmail)
 [![License](http://poser.pugx.org/ezmail/ezmail/license)](https://packagist.org/packages/ezmail/ezmail) 
 [![PHP Version Require](http://poser.pugx.org/ezmail/ezmail/require/php)](https://packagist.org/packages/ezmail/ezmail)
 
@@ -15,9 +15,9 @@ EZMAIL is a lightweight package created with PHP using the official MIME documen
 - Auto email encryption
 - Supports LOGIN, PLAIN and XOAUTH2 login types
 - Compatible with php 7.4 or later
+- Supports (php mail by using the mail() function). (requires php.ini config) (not recommended).
 - Easy implementation within any php code.
 - Supports Plain or HTML body
-- Log details while in debug mode.
 
 
 ## Further Documentation for developers
@@ -49,84 +49,80 @@ composer require ezmail/ezmail
     #Autoload
     require 'vendor/autoload.php';
 
-    $ezmail = new EZMAIL();
+    $config = [
+        "appName" => "EZMAIL",
+        "subject" => "Test Email",
+        "body" => "<p>This is a sample email that can be in plain text or HTML</p>",
+        "to" => ["My name" => "example@host.com"],
+        "config" => [
+            "hostName" => "smtp.myhost.com",
+            "portNumber" => 587,
+            "username" => "example@host.com",
+            "password" => "MyCredentials",
+        ]
+    ];
 
-    #Config
-    $ezmail->appName = "EZMAIL";
-    $ezmail->hostName = "smtp.myhost.com";
-    $ezmail->portNumber = 123;
-    $ezmail->username = "myUsername";
-    $ezmail->password = "myPassword";
-
-    #Email
-    $ezmail->subject = "this is subject";
-    $ezmail->body = "this is message";
-    $ezmail->to = [ "Mr Recv" => "toEmail@example.com" ];
-
-    #uncomment to send email with attachments. A full file path is required.
-    //$ezmail->attachments = [ "https://mywebsite/myfile.txt" ];
 
     try
     {
-        if($ezmail->send())
-        {
-            print("Email sent succesfully");
-        }
-        else
-        {
-            print("unable to send message");
-        }
+        $ezmail = new EZMAIL($config);
+        
+        if($ezmail->send()) print("Email sent succesfully");
     }
     catch(Exception $ex)
     {
+        #Errors
         print($ex->getMessage());
-    } 
+    }
 ```
 
 ## List of available configurations
 
 ```php
-
-    #New instance
-    $ezmail = new EZMAIL();
-
-    $ezmail->subject = "";
-    $ezmail->body = "";
-    $ezmail->to = []; 
-    $ezmail->from = []; //optional
-    $ezmail->cc = []; //optional
-    $ezmail->bcc = []; //optional
-    $ezmail->replyTo = []; //optional
-    $ezmail->attachments = []; //optional
-    $ezmail->bounceAddress = ""; //optional
-    $ezmail->skipMessageIdValidation = true; //optional
-
-    #Connection.
-    $ezmail->appName = "EZMAIL";
-    $ezmail->hostName = "";
-    $ezmail->portNumber = 587;
-    $ezmail->username = "";
-    $ezmail->password = "";
-    $ezmail->timeout = 30; //optional
-    $ezmail->authType = 1; // 1 by default. 2 = auth plain and 3 = 2auth | optional
-    $ezmail->authToken = ""; //optional
-    $ezmail->isDebug = false; //optional
-
-    #send mail
-    $ezmail->send();
-
+$config = [
+    "appName" => "EZMAIL",
+    "useSMTP" => true, //optional
+    "subject" => "Test Email",
+    "body" => "<p>This is a sample email that can be in plain text or HTML</p>",
+    "to" => ["My name" => "example@host.com"],
+    "replyTo" => "", //optional
+    "from" => [], //optional
+    "attachment" => [], //optional
+    "cc" => [], //optional
+    "bcc" => [], //optional
+    "config" => [
+        "isDebug" => true, //optional
+        "hostName" => "smtp.myhost.com",
+        "portNumber" => 587,
+        "timeout" => 30, //optional
+        "username" => "example@host.com",
+        "password" => "MyCredentials",
+        "authToken" => "", //optional
+        "authType" => "STANDARD", //optional
+        "options" => [] //optional
+    ]
+];
 ```
 
+## PHP mail config example
 
+```php
+$config2 = [
+    "appName" => "EZMAIL",
+    "useSMTP" => false,
+    "subject" => "Test Email",
+    "body" => "<p>This is a sample email that can be in plain text or HTML</p>",
+    "to" => ["My name" => "example@host.com"],
+    "config" => ["username" => "example@host.com"]
+];
+```
 
 ## Tips
 - If you are using gmail as your SMTP server you must enable the less secure apps on google. [Learn more](https://www.google.com/settings/security/lesssecureapps)  
 
 
 ## Credits
-[@jerryurenaa](http://jerryurenaa.com)
-[@realivanjx](https://github.com/realivanjx)
-
+This module was inspired and created by [@jerryurenaa](http://jerryurenaa.com)
 
 
 ## License
