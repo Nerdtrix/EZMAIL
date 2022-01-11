@@ -11,6 +11,11 @@
             "email": "jerryurenaa@gmail.com",
             "homepage": "https://jerryurenaa.com",
             "role": "Developer"
+        },
+        {
+            "name": "Ivan Kara",
+            "homepage": "https://github.com/realivanjx",
+            "role": "Developer"
         }
     ],
     "require": {
