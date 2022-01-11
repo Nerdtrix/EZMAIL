@@ -23,9 +23,13 @@ EZMAIL is a lightweight package created with PHP using the official MIME documen
 ## Further Documentation for developers
 
 [RFC0821](https://www.ietf.org/rfc/rfc0821.txt)
+
 [RFC0822](https://tools.ietf.org/html/rfc822)
+
 [RFC1869](https://tools.ietf.org/html/rfc1869)
+
 [RFC2045](https://tools.ietf.org/html/rfc2045)
+
 [RFC2821](https://www.ietf.org/rfc/rfc2821.txt)
 
 ## Installation
@@ -121,6 +125,7 @@ composer require ezmail/ezmail
 
 ## Credits
 [@jerryurenaa](http://jerryurenaa.com)
+
 [@realivanjx](https://github.com/realivanjx)
 
 
