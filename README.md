@@ -5,19 +5,18 @@
 [![PHP Version Require](http://poser.pugx.org/ezmail/ezmail/require/php)](https://packagist.org/packages/ezmail/ezmail)
 
 ## Overview
-EZMAIL is a lightweight package created with PHP using the official MIME documentation to send emails using the latest SMTP configuration. By using this package you will be able to send encrypted emails to anyone with a valid email address.
+EZMAIL is a lightweight package created with PHP using the official MIME documentation to send emails using the latest SMTP configuration. By using this package you will be able to send emails securely to anyone with a valid email address.
 
 ## Features
-- Send SMTP emails from PHP 
-- Send mail from localhost or server
+- Send SMTP emails from PHP without mail()
 - Send one or multiple attachments supported
 - Send emails with multiple To, CC and BCC
-- Auto email encryption
+- Secure SMTP connection
 - Supports LOGIN, PLAIN and XOAUTH2 login types
 - Compatible with php 7.4 or later
-- Easy implementation within any php code.
+- Easy implementation within any php code
 - Supports Plain or HTML body
-- Log details while in debug mode.
+- Log details while in debug mode
 
 
 ## Further Documentation for developers
@@ -39,7 +38,7 @@ composer require ezmail/ezmail
 ```
 
 
-## Ussage 
+## Usage 
 
 ```php
 <?php
@@ -62,20 +61,20 @@ composer require ezmail/ezmail
     $ezmail->subject = "this is subject";
     $ezmail->body = "this is message";
     $ezmail->to = [ "Mr Recv" => "toEmail@example.com" ];
+    # or
+    $ezmail->to = [ "toEmail@example.com" ]; # name is optional for all address fields
+    
+    #Optionally can be configured directly from the constructor on PHP 8+
+    #$ezmail = new EZMAIL(appName: "EZMAIL", hostName: "smtp.myhost.com", ...);
 
-    #uncomment to send email with attachments. A full file path is required.
+    #uncomment to send email with attachments. A full file path or url is required.
+    //$ezmail->attachments = [ "My File.txt" => "https://mywebsite/myfile.txt" ];
+    // or
     //$ezmail->attachments = [ "https://mywebsite/myfile.txt" ];
 
     try
     {
-        if($ezmail->send())
-        {
-            print("Email sent succesfully");
-        }
-        else
-        {
-            print("unable to send message");
-        }
+        $mailId = $ezmail->send(); // Mail ID from the mail server here.
     }
     catch(Exception $ex)
     {
@@ -108,9 +107,9 @@ composer require ezmail/ezmail
     $ezmail->username = "";
     $ezmail->password = "";
     $ezmail->timeout = 30; //optional
-    $ezmail->authType = 1; // 1 by default. 2 = auth plain and 3 = 2auth | optional
-    $ezmail->authToken = ""; //optional
-    $ezmail->isDebug = false; //optional
+    $ezmail->authType = SMTP::AUTH_TYPE_STANDARD; // or SMTP::AUTH_TYPE_PLAIN, SMTP::AUTH_TYPE_2AUTH
+    $ezmail->authToken = ""; //if using SMTP::AUTH_TYPE_2AUTH
+    $ezmail->isDebug = false; //true to enable SMTP logging
 
     #send mail
     $ezmail->send();
