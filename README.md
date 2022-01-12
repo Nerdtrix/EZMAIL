@@ -61,12 +61,15 @@ composer require ezmail/ezmail
     $ezmail->subject = "this is subject";
     $ezmail->body = "this is message";
     $ezmail->to = [ "Mr Recv" => "toEmail@example.com" ];
-    #or $ezmail->to = [ "toEmail@example.com" ]; # name is optional for all address fields
+    # or
+    $ezmail->to = [ "toEmail@example.com" ]; # name is optional for all address fields
     
     #Optionally can be configured directly from the constructor on PHP 8+
     #$ezmail = new EZMAIL(appName: "EZMAIL", hostName: "smtp.myhost.com", ...);
 
-    #uncomment to send email with attachments. A full file path/url is required.
+    #uncomment to send email with attachments. A full file path or url is required.
+    //$ezmail->attachments = [ "My File.txt" => "https://mywebsite/myfile.txt" ];
+    // or
     //$ezmail->attachments = [ "https://mywebsite/myfile.txt" ];
 
     try
