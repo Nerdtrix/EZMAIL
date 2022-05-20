@@ -42,7 +42,7 @@ class EZMAILTest extends TestCase
         // Parameters.
         $this->ezmail->subject = "this is subject";
         $this->ezmail->body = "this is message";
-        $this->ezmail->from = [ "Mr From" => "from@mail.com", ];
+        $this->ezmail->from = [ "Mr From" => "from@mail.com" ];
         $this->ezmail->to = [ "Mr Recv" => "recv@mail.com" ];
         $this->ezmail->cc = [ "Mr Cc" => "cc@mail.com" ];
         $this->ezmail->bcc = [ "Mr Bcc" => "bcc@mail.com" ];
