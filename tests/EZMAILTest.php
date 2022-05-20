@@ -73,6 +73,9 @@ class EZMAILTest extends TestCase
         $this->assertTrue($this->smtpFactory->result->isConnected);
         $this->assertTrue($this->smtpFactory->result->doneHandshake);
         $this->assertTrue($this->smtpFactory->result->hasQuit);
+        $this->assertTrue($this->smtpFactory->result->doneSendMail);
+        $this->assertEquals("from@mail.com", $this->smtpFactory->result->startSendMailFrom);
+        $this->assertEquals("recv@mail.com", $this->smtpFactory->result->startSendMailTo[0]);
 
         $this->assertEquals(3, count($this->smtpFactory->result->writeMailDataArgs));
         $this->assertEquals("H1", $this->smtpFactory->result->writeMailDataArgs[0]);

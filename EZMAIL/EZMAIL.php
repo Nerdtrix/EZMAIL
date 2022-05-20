@@ -213,7 +213,8 @@ class EZMAIL implements IMailBuilderWriter
                 $fromAddress = array_values($this->from)[0];
             }
 
-            $this->smtp->startSendMail($fromAddress, $this->to);
+            $toAddresses = array_values($this->to);
+            $this->smtp->startSendMail($fromAddress, $toAddresses);
 
             // Sending mail data.
             $mailId = $this->mailIdGenerator->generate();
