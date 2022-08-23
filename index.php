@@ -9,7 +9,7 @@
     */
 
     #Autoload
-    require 'vendor/autoload.php';
+    require "vendor/autoload.php";
     
     /**
      * This config includes all of the available parameters.

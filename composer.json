@@ -24,7 +24,8 @@
     "autoload": {
         "psr-4": {
             "EZMAIL\\": "EZMAIL/"
-        }
+        },
+        "classmap": ["EZMAIL/"]
     },
     "autoload-dev": {
         "psr-4": {
@@ -35,4 +36,5 @@
         "php": ">=8.1.0",
         "phpunit/phpunit": "^9.5"
     }
+    
 }

@@ -1,89 +1,98 @@
 <?php
+    namespace EZMAIL;
+    use Exception;
 
-namespace EZMAIL;
-use Exception;
+    define("PHP_CRLF", "\r\n");
 
-class Socket implements ISocket
-{
-    private $connection; // resource.
-
-    public function open(string $host, int $port, float $timeout) : void
+    interface ISocket
     {
-        $errorCode = 0;
-        $errorMessage = "";
-        
-        // Opening socket.
-        if (function_exists("stream_socket_client"))
-        {
-            $this->connection = stream_socket_client(
-                sprintf("%s:%d", $host, $port),
-                $errorCode,
-                $errorMessage,
-                $timeout
-            );
-        }
-        else
-        {
-            $this->connection = fsockopen(
-                $host,
-                $port,
-                $errorCode,
-                $errorMessage,
-                $timeout
-            );
-        }
-        
-        if (!is_resource($this->connection))
-        {
-            // Open failed.
-            throw new Exception (
-                serialize([
-                    "errorCode" => $errorCode,
-                    "errorMessage" => $errorMessage
-                ])
-            );
-        }
+        public function open(string $host, int $port, float $timeout) : void;
+        public function readString(int $lenToRead) : string;
+        public function writeString(string $data) : void;
+        public function enableCrypto() : void;
+        public function close() : void;
     }
 
-    public function enableCrypto(): void
+    class Socket implements ISocket
     {
-        if (!stream_socket_enable_crypto(
-            $this->connection,
-            true,
-            STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT
-        ))
+        private $connection; // resource.
+
+        public function open(string $host, int $port, float $timeout) : void
         {
-            throw new Exception("Unable to enable crypto");
+            $errorCode = 0;
+            $errorMessage = "";
+            
+            // Opening socket.
+            if (function_exists("stream_socket_client"))
+            {
+                $this->connection = stream_socket_client(
+                    sprintf("%s:%d", $host, $port),
+                    $errorCode,
+                    $errorMessage,
+                    $timeout
+                );
+            }
+            else
+            {
+                $this->connection = fsockopen(
+                    $host,
+                    $port,
+                    $errorCode,
+                    $errorMessage,
+                    $timeout
+                );
+            }
+            
+            if (!is_resource($this->connection))
+            {
+                // Open failed.
+                throw new Exception (
+                    serialize([
+                        "errorCode" => $errorCode,
+                        "errorMessage" => $errorMessage
+                    ])
+                );
+            }
+        }
+
+        public function enableCrypto(): void
+        {
+            if (!stream_socket_enable_crypto(
+                $this->connection,
+                true,
+                STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT
+            ))
+            {
+                throw new Exception("Unable to enable crypto");
+            }
+        }
+
+        public function readString(int $lenToRead) : string
+        {
+            // Checking connection state.
+            $meta = stream_get_meta_data($this->connection);
+
+            if ($meta["eof"])
+            {
+                throw new Exception("Connection closed");
+            }
+
+            // Reading.
+            return fgets($this->connection, $lenToRead + 1);
+        }
+
+        public function writeString(string $data) : void
+        {
+            fwrite($this->connection, $data);
+        }
+
+        public function close() : void
+        {
+            try
+            {
+                fclose($this->connection);
+            }
+            catch (Exception $ex) { }
         }
     }
-
-    public function readString(int $lenToRead) : string
-    {
-        // Checking connection state.
-        $meta = stream_get_meta_data($this->connection);
-
-        if ($meta["eof"])
-        {
-            throw new Exception("Connection closed");
-        }
-
-        // Reading.
-        return fgets($this->connection, $lenToRead + 1);
-    }
-
-    public function writeString(string $data) : void
-    {
-        fwrite($this->connection, $data);
-    }
-
-    public function close() : void
-    {
-        try
-        {
-            fclose($this->connection);
-        }
-        catch (Exception $ex) { }
-    }
-}
-
 ?>

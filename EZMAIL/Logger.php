@@ -1,14 +1,18 @@
 <?php
+    namespace EZMAIL;
 
-namespace EZMAIL;
-
-class Logger implements ILogger
-{
-    public function log(string $format, ...$values) : void
+    interface ILogger
     {
-        // Print to console.
-        print(sprintf($format, ...$values) . PHP_EOL);
+        public function log(string $format, ...$values) : void;
     }
-}
 
+
+    class Logger implements ILogger
+    {
+        public function log(string $format, ...$values) : void
+        {
+            // Print to console.
+            print(sprintf($format, ...$values) . PHP_EOL);
+        }
+    }
 ?>

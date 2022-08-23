@@ -1,13 +1,12 @@
 <?php
+    namespace EZMAIL;
 
-namespace EZMAIL;
-
-class EmptyLogger implements ILogger
-{
-    public function log(string $format, ...$values) : void
+    class EmptyLogger implements ILogger
     {
-        // Do nothing.
+        public function log(string $format, ...$values) : void
+        {
+            // Do nothing.
+        }
     }
-}
 
 ?>
