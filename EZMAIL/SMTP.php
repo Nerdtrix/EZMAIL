@@ -445,7 +445,7 @@
             }
 
             $this->logger->log("Mail data sent");
-            $okpos = strpos($response->messages[0], "OK ");
+            $okpos = strpos(strtoupper($response->messages[0]), "OK");
 
             if ($okpos === false)
             {
